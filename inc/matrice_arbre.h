@@ -8,6 +8,7 @@ typedef struct matrice_arbre
   int descendant_2;
   int ancetre;
   float longueur_branche;
+  float somme_lb;
   float Ti;
   float Temps;
 } Matrice_arbre;

@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
     int pos=0;
     strtree=PrintTree(0,individus_matrix,strtree,&pos,nombre_individu);
     strtree[pos]=0;
-    //printf("%s;\n", strtree);
+    printf("%s;\n", strtree);
     put_string(&fptr, name, strtree);
 
     last_individu = get_last_individu(individus_matrix, nombre_individu_total);
@@ -46,10 +46,10 @@ int main(int argc, char *argv[])
     time_recombinaison = random_recombinaison(somme_branches);
     
     printf("Somme des branches = %f\n",somme_branches);
-    printf("Pour le chiffre au hazard entre 0 et somme_branches : %f on obtient : %f\n",somme_branches, time_recombinaison); 
+    printf("Pour le chiffre au hazard entre 0 et somme_branches : %f on obtient : %f\n",somme_branches, time_recombinaison);
     
     recombinaison_individu = get_individu_event_recombinaison(individus_matrix, time_recombinaison, last_individu);
-    printf("L'évènement de recombinaison a eu lieu sur l'individu %d\n",recombinaison_individu); 
+    printf("L'évènement de recombinaison a eu lieu sur l'individu %d a une longueur de branche exacte de %f\n",recombinaison_individu, time_recombinaison); 
 
     free(strtree);
     return(EXIT_SUCCESS);

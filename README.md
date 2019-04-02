@@ -1,8 +1,8 @@
-# Generator phylogenetic tree
+# Creator phylogenetic tree
 ----
 ## Principe :
 ----
-Le programme "generator phylogenetic tree" écrit en C est un petit programme qui génère aléatoirement un arbre phylogénétique. Plusieurs paramètres permettent de varier son l'application comme le nombre d'indivu ou la simulation du phénomène de recombinaison.
+Le programme "Creator phylogenetic tree" écrit en C est un petit programme qui génère aléatoirement un arbre phylogénétique. Plusieurs paramètres permettent de varier son l'application comme le nombre d'indivu ou la simulation du phénomène de recombinaison.
 
 ## Installation :
 ----
@@ -16,20 +16,18 @@ Si le programme n'est pas exécutable :
 
 * sous (Debian/Ubuntu):
 ```bash
-chmod +x generator_phylogenetic_tree
+chmod +x Creator_phylogenetic_tree
 ```
 
 #### Il aura pour arborescence :
 
 ```bash 
-├── generator_phylogenetic_tree
+├── creator_phylogenetic_tree
 ├── inc
 │   ├── errors.h
 │   ├── matrice_arbre.h
 │   └── newick.h
 ├── Makefile
-├── obj
-├── output
 ├── README
 ├── README.md
 └── src
@@ -45,17 +43,18 @@ chmod +x generator_phylogenetic_tree
 L'utilisation est la suivante :
 
 ```sh
-./generator_phylogenetic_tree <interger> <namefile>
+./Creator_phylogenetic_tree <interger> <namefile>
 ```
 
 Example sous (Dedian/Ubuntu) :
 
 ```sh
-./generator_phylogenetic_tree 10 namefile
+./Creator_phylogenetic_tree 10 namefile
 ```
 La commande suivante a généré un arbre phylogénétique comportant 10 individus selectionnés de manière aléatoire et un fichier de sortie "newick" (.nwk) qui nous permettra de visualiser le résultat.
 
 #### paramètres :
+
 * __interger__ :
 Ce paramètre correspond au nombre d'individu choisi et il peut être très grand.
 
@@ -97,12 +96,12 @@ Visualisation du résultat à l'aide du logiciel FigTree.
 Lors de l'excution du programme l'erreur suivante apparait :
 
 ```sh
-erreur dans le nombre d'individus - ex pour un arbre avec 4 individus : ./generator_phylogenetic_tree 4 namefile
+erreur dans le nombre d'individus - ex pour un arbre avec 4 individus : ./Creator_phylogenetic_tree 4 namefile
 ```
 * L'erreur provient du fait qu'aucun paramètre ne précise le nombre de d'individu souhaité.
 
 ```sh
-erreur dans le nom du fichier - ex : ./generator_phylogenetic_tree 4 namefile
+erreur dans le nom du fichier - ex : ./Creator_phylogenetic_tree 4 namefile
 ```
 * L'erreur vient du fait qu'il n'y a aucun nom qui a été précisé dans les paramètres.
 

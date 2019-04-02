@@ -71,6 +71,7 @@ void initiate_matrix(Matrice_arbre *matrix, int nombre_individu_total){
     matrix[i].descendant_1 = -1;
     matrix[i].descendant_2 = -1;
     matrix[i].longueur_branche = 0;
+    matrix[i].somme_lb = 0;
     matrix[i].Ti = 0.0;
     matrix[i].Temps = 0.0;
   }
@@ -99,6 +100,7 @@ void get_all_informations(Matrice_arbre *matrix, int nombre_individu, int nombre
     printf(", Anc: %d ",matrix[i].ancetre);
     printf("T%d : %g ",i,matrix[i].Ti);
     printf(", l_b : %g ",matrix[i].longueur_branche);
+    printf(", s_lb : %f ",matrix[i].somme_lb);
     printf(", Temps : %g\n",matrix[i].Temps);
   }
 }
@@ -162,10 +164,13 @@ void create_phylogenetic_tree(Matrice_arbre *matrix, int *array, int array_start
     matrix[i].Temps +=  matrix[i].Ti + matrix[i-1].Temps;
   }
 
+  float result = 0.0;
   //ajoute les longueurs de branches
   for (int i = 0 ; i < nombre_individu_total - 1; ++i)
   {
     matrix[i].longueur_branche = matrix[matrix[i].ancetre].Temps - matrix[i].Temps;
+    result += matrix[i].longueur_branche;
+    matrix[i].somme_lb = result;
   }
 }
 
@@ -194,13 +199,20 @@ float random_recombinaison(float Temps)
   return result;
 }
 
+//retourne l'individu ou est la recombinaison
 int get_individu_event_recombinaison(Matrice_arbre *matrix, float event_recombinaison, int last_individu)
 {
-  for (int i = 0; i < last_individu; ++i)
+  float result = matrix[0].longueur_branche;
+  int count = 0;
+  for (int i = 1; i < last_individu; ++i)
   {
-    if (matrix[i].longueur_branche >= event_recombinaison)
-      return (matrix[i].individu);
+    if (result >= event_recombinaison)
+      return count ;
+    else{
+      result += matrix[i].longueur_branche;
+      count++;
+    }
   }
-  return -1;
+  return count;
 }
 

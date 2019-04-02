@@ -22,14 +22,14 @@ void put_string(FILE *file, char *name, char *c){
 }
 
 // Fonction pour afficher au format newick une structure Matrice_arbre
-char* PrintTree(int indiv, Matrice_arbre InfosIndiv[], char *strtree, int * pos, int N)
+char* PrintTree(int indiv, Matrice_arbre *matrix, char *strtree, int * pos, int N)
 {
 	if ((*pos)==0)
     {
         int i;
         for (i=N;i<N*2-1;i++)
         {
-            if (InfosIndiv[i].ancetre==-1)
+            if (matrix[i].ancetre==-1)
                 indiv=i;
         }
     }
@@ -44,26 +44,24 @@ char* PrintTree(int indiv, Matrice_arbre InfosIndiv[], char *strtree, int * pos,
         }
     }
     
-    if (InfosIndiv[indiv].descendant_1==-1)
+    if (matrix[indiv].descendant_1==-1)
     {
         sprintf(strtree+(*pos),"%d",indiv);
         float ajout=ceil(log10(indiv+1));
         int ajout_pos= (int) ajout;
         if (ajout_pos==0) ajout_pos=1; //PB log(1)=0
         (*pos)+=ajout_pos;
-        sprintf(strtree+(*pos),":%7.6f",InfosIndiv[indiv].longueur_branche);
-        (*pos)+=9;
-        
-        
+        sprintf(strtree+(*pos),":%7.6f",matrix[indiv].longueur_branche);
+        (*pos)+=9;     
     }
     else
     {
         sprintf(strtree+(*pos)++,"(");
-        strtree=PrintTree(InfosIndiv[indiv].descendant_1,InfosIndiv,strtree,pos,N);
+        strtree=PrintTree(matrix[indiv].descendant_1,matrix,strtree,pos,N);
         sprintf(strtree+(*pos)++,",");
-        strtree=PrintTree(InfosIndiv[indiv].descendant_2,InfosIndiv,strtree,pos,N);
+        strtree=PrintTree(matrix[indiv].descendant_2,matrix,strtree,pos,N);
         sprintf(strtree+(*pos)++,")");
-        sprintf(strtree+(*pos),":%7.6f",InfosIndiv[indiv].longueur_branche);
+        sprintf(strtree+(*pos),":%7.6f",matrix[indiv].longueur_branche);
         (*pos)+=9;
         
     }
