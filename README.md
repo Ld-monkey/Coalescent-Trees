@@ -19,7 +19,11 @@ Si le programme n'est pas exécutable :
 chmod +x generator_phylogenetic_tree
 ```
 
+<<<<<<< HEAD
 Il aura pour arborescence :
+=======
+Il aura pour pour arborescence :
+>>>>>>> master
 
 ```bash 
 ├── generator_phylogenetic_tree
