@@ -16,7 +16,7 @@ Si le programme n'est pas exécutable :
 
 * sous (Debian/Ubuntu):
 ```bash
-chmod +x Creator_phylogenetic_tree
+chmod +x creator_phylogenetic_tree
 ```
 
 #### Il aura pour arborescence :
@@ -43,13 +43,13 @@ chmod +x Creator_phylogenetic_tree
 L'utilisation est la suivante :
 
 ```sh
-./Creator_phylogenetic_tree <interger> <namefile>
+./creator_phylogenetic_tree <interger> <namefile>
 ```
 
 Example sous (Dedian/Ubuntu) :
 
 ```sh
-./Creator_phylogenetic_tree 10 namefile
+./creator_phylogenetic_tree 10 namefile
 ```
 La commande suivante a généré un arbre phylogénétique comportant 10 individus selectionnés de manière aléatoire et un fichier de sortie "newick" (.nwk) qui nous permettra de visualiser le résultat.
 
@@ -96,12 +96,12 @@ Visualisation du résultat à l'aide du logiciel FigTree.
 Lors de l'excution du programme l'erreur suivante apparait :
 
 ```sh
-erreur dans le nombre d'individus - ex pour un arbre avec 4 individus : ./Creator_phylogenetic_tree 4 namefile
+erreur dans le nombre d'individus - ex pour un arbre avec 4 individus : ./creator_phylogenetic_tree 4 namefile
 ```
 * L'erreur provient du fait qu'aucun paramètre ne précise le nombre de d'individu souhaité.
 
 ```sh
-erreur dans le nom du fichier - ex : ./Creator_phylogenetic_tree 4 namefile
+erreur dans le nom du fichier - ex : ./creator_phylogenetic_tree 4 namefile
 ```
 * L'erreur vient du fait qu'il n'y a aucun nom qui a été précisé dans les paramètres.
 
