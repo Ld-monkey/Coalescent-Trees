@@ -1,11 +1,11 @@
 # Creator phylogenetic tree
-----
+
 ## Principe :
-----
+
 Le programme "Creator phylogenetic tree" écrit en C est un petit programme qui génère aléatoirement un arbre phylogénétique. Plusieurs paramètres permettent de varier son l'application comme le nombre d'indivu ou la simulation du phénomène de recombinaison.
 
 ## Installation :
-----
+
 Aller dans le répertoire ou se trouve le programme et taper dans l'invite de commande :
 
 * sous (Debian/Ubuntu):
@@ -38,7 +38,7 @@ chmod +x Creator_phylogenetic_tree
 ```
 
 ## Utilisation :
-----
+
 
 L'utilisation est la suivante :
 
@@ -61,11 +61,11 @@ Ce paramètre correspond au nombre d'individu choisi et il peut être très gran
 * __namefile__ : Ce paramètre indique le répertoire (ici c'est output par défaut) ainsi que le nom du fichier de sortie.
 
 ## Resultats :
------
+
 Les résultats s'affichent de la manière suivante :
 
 ##### Exemples pour 5 individus:
----
+
 
 
 |individu : | 1er descendant : | 2nd descendant : | Ancêtre : | Ti :     | longueur branche   : | Temps    :|
@@ -84,13 +84,13 @@ Les résultats s'affichent de la manière suivante :
 Lorsque la valeur "-1" est renvoyée cela correpond a une valeur NULL c'est à dire qu'elle ne renvoie aucun paramètres illustrés ci-dessus.
 
 ##### Visualisation du fichier de sortie
-----
+
 ![alt text](namefile.png "Example_newick_file")
 
 Visualisation du résultat à l'aide du logiciel FigTree.
 
 ## Erreurs :
------
+
 * Mauvais paramètres :
 
 Lors de l'excution du programme l'erreur suivante apparait :
