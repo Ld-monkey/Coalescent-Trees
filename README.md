@@ -2,7 +2,7 @@
 
 ## Principe :
 
-Le programme "Creator phylogenetic tree" écrit en C est un petit programme qui génère aléatoirement un arbre phylogénétique. Plusieurs paramètres permettent de varier son l'application comme le nombre d'indivu ou la simulation du phénomène de recombinaison.
+Le programme "Creator phylogenetic tree" écrit en C est un petit programme qui génère aléatoirement un arbre phylogénétique. Plusieurs paramètres permettent de varier son application comme le nombre d'indivu ou la simulation du phénomène de recombinaison.
 
 ## Installation :
 
