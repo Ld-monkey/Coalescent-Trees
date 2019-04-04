@@ -10,9 +10,7 @@ int main(int argc, char *argv[])
 {
   if( argc != 3)
     get_null_argv(argc, argv);
-  {
-    FILE fptr;      
-    char *name = argv[2];
+  {   
     int nombre_individu = atoi(argv[1]);
     int array_start_individu = nombre_individu;
     int nombre_individu_total = get_individus_number(nombre_individu);
@@ -21,35 +19,31 @@ int main(int argc, char *argv[])
     int last_individu, recombinaison_individu;
     Matrice_arbre individus_matrix[nombre_individu_total];
 
+    // variables nécessaires a la création du fichier newick
+    char *strtree = (char *)malloc(1000*(sizeof(char)));
+    char *name_file = argv[2];
+    int position = 0;
+    FILE fptr; 
+
     readme_information();
     initiate_table(individus_table, nombre_individu);
     initiate_matrix(individus_matrix, nombre_individu_total);
     create_phylogenetic_tree(individus_matrix, individus_table, array_start_individu, nombre_individu, nombre_individu_total);
     get_all_informations(individus_matrix, 0, nombre_individu_total);
     
-    //Afficher le format newick
-    char * strtree; //chaine de caractere dans laquelle on ecrit
-    strtree=(char*)malloc(1000*(sizeof(char)));
-    if (strtree==NULL)
-    {
-        fprintf(stdout, "je ne peux pas afficher printtree"), exit(35);
-    }
-    strtree[999]=0; //Fin de la chaine
-    int pos=0;
-    strtree=PrintTree(0,individus_matrix,strtree,&pos,nombre_individu);
-    strtree[pos]=0;
-    printf("%s;\n", strtree);
-    put_string(&fptr, name, strtree);
+    //chaine de caractère recupere la typologie du format newick puis creation d'un fichier newick .nwk
+    strtree = PrintTree(0, individus_matrix, strtree, &position, nombre_individu);
+    create_newick_file(&fptr, name_file, strtree);
 
+    // variables correspondant aux branches de l'arbre
     last_individu = get_last_individu(individus_matrix, nombre_individu_total);
     somme_branches = get_somme_branches(individus_matrix, last_individu);
     time_recombinaison = random_recombinaison(somme_branches);
-    
+    recombinaison_individu = get_individu_event_recombinaison(individus_matrix, time_recombinaison, last_individu);
+
     printf("Somme des branches = %f\n",somme_branches);
     printf("Pour le chiffre au hazard entre 0 et somme_branches : %f on obtient : %f\n",somme_branches, time_recombinaison);
-    
-    recombinaison_individu = get_individu_event_recombinaison(individus_matrix, time_recombinaison, last_individu);
-    printf("L'évènement de recombinaison a eu lieu sur l'individu %d a une longueur de branche exacte de %f\n",recombinaison_individu, time_recombinaison); 
+    printf("L'évènement de recombinaison a eu lieu sur l'individu %d a une longueur de branche exacte de %f\n",recombinaison_individu, time_recombinaison);
 
     free(strtree);
     return(EXIT_SUCCESS);

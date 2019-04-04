@@ -95,13 +95,13 @@ int get_individus_number(int n){
 void get_all_informations(Matrice_arbre *matrix, int nombre_individu, int nombre_individu_total){
   for(int i = nombre_individu; i < nombre_individu_total; i++){
     printf("i : %d ",matrix[i].individu);
-    printf(", desc_1: %d ",matrix[i].descendant_1);
-    printf(", desc_2: %d ",matrix[i].descendant_2);
-    printf(", Anc: %d ",matrix[i].ancetre);
+    printf(",d_1: %d ",matrix[i].descendant_1);
+    printf(",d_2: %d ",matrix[i].descendant_2);
+    printf(",Anc: %d ",matrix[i].ancetre);
     printf("T%d : %g ",i,matrix[i].Ti);
-    printf(", l_b : %g ",matrix[i].longueur_branche);
-    printf(", s_lb : %f ",matrix[i].somme_lb);
-    printf(", Temps : %g\n",matrix[i].Temps);
+    printf(",l_b : %g ",matrix[i].longueur_branche);
+    printf("s_lb : %f ",matrix[i].somme_lb);
+    printf(",Tps : %g\n",matrix[i].Temps);
   }
 }
   
@@ -214,5 +214,11 @@ int get_individu_event_recombinaison(Matrice_arbre *matrix, float event_recombin
     }
   }
   return count;
+}
+
+//retourne le temps ou a eu lieu la recombinaison
+float get_time_event_recombinaison(Matrice_arbre *matrix, float event_recombinaison)
+{
+  return event_recombinaison;
 }
 
