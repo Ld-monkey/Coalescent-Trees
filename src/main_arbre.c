@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
     int array_start_individu = nombre_individu;
     int nombre_individu_total = get_individus_number(nombre_individu);
     int *individus_table = malloc(sizeof(int) * nombre_individu);
-    float somme_branches, time_recombinaison;
+    float somme_branches, random_time_recombinaison, real_time_recombinaison;
     int last_individu, recombinaison_individu;
     Matrice_arbre individus_matrix[nombre_individu_total];
 
@@ -38,12 +38,14 @@ int main(int argc, char *argv[])
     // variables correspondant aux branches de l'arbre
     last_individu = get_last_individu(individus_matrix, nombre_individu_total);
     somme_branches = get_somme_branches(individus_matrix, last_individu);
-    time_recombinaison = random_recombinaison(somme_branches);
-    recombinaison_individu = get_individu_event_recombinaison(individus_matrix, time_recombinaison, last_individu);
+    random_time_recombinaison = random_recombinaison(somme_branches);
+    recombinaison_individu = get_individu_event_recombinaison(individus_matrix, random_time_recombinaison, last_individu);
+    real_time_recombinaison = get_time_event_recombinaison(individus_matrix, random_time_recombinaison, last_individu);
 
-    printf("Somme des branches = %f\n",somme_branches);
-    printf("Pour le chiffre au hazard entre 0 et somme_branches : %f on obtient : %f\n",somme_branches, time_recombinaison);
-    printf("L'évènement de recombinaison a eu lieu sur l'individu %d a une longueur de branche exacte de %f\n",recombinaison_individu, time_recombinaison);
+    printf("--------------------------------------------------------------\n");
+    printf("L'évènement de recombinaison pris au hazard entre [0, %f] = %f.\n",somme_branches, random_time_recombinaison);
+    printf("L'évènement de recombinaison a eu lieu sur l'individu %d.\n",recombinaison_individu);
+    printf("Le temps pour la recombinaison est %f .\n", real_time_recombinaison);
 
     free(strtree);
     return(EXIT_SUCCESS);

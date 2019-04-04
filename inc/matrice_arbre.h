@@ -25,5 +25,7 @@ extern float get_somme_branches(Matrice_arbre *matrix, int last_individu);
 extern int get_last_individu(Matrice_arbre *matrix, int individu);
 extern float random_recombinaison(float Temps);
 extern int get_individu_event_recombinaison(Matrice_arbre *matrix, float event_recombinaison, int last_individu);
+extern float get_time_event_recombinaison(Matrice_arbre *matrix, float event_recombinaison, int last_individu);
+
 
 #endif /*MATRICE_ARBRE*/
