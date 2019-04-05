@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -W -Wall -lm -I$(INC_DIR)
+CFLAGS = -std=c99 -W -Wall -lm -I$(INC_DIR)
 INC_DIR = inc
 SRC_DIR = src
 SOURCE = $(wildcard $(SRC_DIR)/*.c)

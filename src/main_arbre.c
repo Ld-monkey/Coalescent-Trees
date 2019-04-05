@@ -47,6 +47,13 @@ int main(int argc, char *argv[])
     printf("L'évènement de recombinaison a eu lieu sur l'individu %d.\n",recombinaison_individu);
     printf("Le temps pour la recombinaison est %f .\n", real_time_recombinaison);
 
+    //par defaut 1 individu est concerné
+    //int *individu_concerned_by_recombinaison = malloc(sizeof(int) * 1);
+
+    int all_individu_recombinaison;
+    all_individu_recombinaison = get_all_individu_concerned_by_recombinaison(individus_matrix, real_time_recombinaison, nombre_individu);
+    printf("le nombre d'individu pour la recombinaison est %d\n", all_individu_recombinaison);
+
     free(strtree);
     return(EXIT_SUCCESS);
     

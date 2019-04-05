@@ -45,8 +45,8 @@ static float random_float(){
   return result;
 }
 
-static //ajoute tous les individus dans une matrice
-void add_all_individu_in_matrix(Matrice_arbre *m, int nombre_individu){
+//ajoute tous les individus dans une matrice
+static void add_all_individu_in_matrix(Matrice_arbre *m, int nombre_individu){
   for( int i =  0; i < nombre_individu; i++)
     add_individu(&m[i], i);
 }
@@ -223,11 +223,28 @@ float get_time_event_recombinaison(Matrice_arbre *matrix, float event_recombinai
   float result = matrix[0].longueur_branche;
   for (int i = 1; i < last_individu + 1; ++i)
   {
-    if (result >= event_recombinaison)    
-      return ( matrix[i - 1].Temps + (matrix[i - 1].longueur_branche - (matrix[i - 1].somme_lb - event_recombinaison)));
+    if (result >= event_recombinaison) // matrix[i-1] car la boucle commendce a 1 et fini a last_individu + 1    
+      return ( matrix[i-1].Temps + (matrix[i-1].longueur_branche - (matrix[i-1].somme_lb - event_recombinaison)));
     else
       result += matrix[i].longueur_branche;
   }
   return -1;
 }
+
+int get_all_individu_concerned_by_recombinaison(Matrice_arbre *matrix, float event_recombinaison, int nombre_individu)
+{
+  for (int i = nombre_individu; i < (nombre_individu * 2)-1; ++i)
+  {
+    //printf("matrix[%d].Temps = %f ",i, matrix[i].Temps);
+    //printf("et l'évènement de recombinaison est %f\n",event_recombinaison);
+    if (event_recombinaison < matrix[i].Temps )
+    {
+      //printf("le nombe d'individu %d \n",nombre_individu);
+      //printf("le nombre d'individu est %d\n", (nombre_individu - (i - nombre_individu)));
+      return(nombre_individu - (i - nombre_individu));
+    }
+  }
+  return -1;
+}
+
 
