@@ -92,6 +92,8 @@ int main(int argc, char *argv[])
     individu_selectioned = get_random_int_table(individu_concerned_by_coalescence, length_table);
     printf("L'individu selectionné au hazard dans le tableau est %d\n",individu_selectioned);
 
+    //the next step
+
 
     free(strtree);
     free(individu_concerned_by_coalescence);
