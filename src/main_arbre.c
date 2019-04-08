@@ -47,9 +47,7 @@ int main(int argc, char *argv[])
     printf("L'évènement de recombinaison pris au hazard entre [0, %f] = %f.\n",somme_branches, random_time_recombinaison);
     printf("L'évènement de recombinaison a eu lieu sur l'individu %d.\n",recombinaison_individu);
     printf("Le temps pour la recombinaison est %f .\n", real_time_recombinaison);
-
-    //par defaut 1 individu est concerné
-    //int *individu_concerned_by_recombinaison = malloc(sizeof(int) * 1);
+    printf("--------------------------------------------------------------\n");
 
     int all_individu_recombinaison;
     all_individu_recombinaison = get_all_individu_concerned_by_event(individus_matrix, real_time_recombinaison, nombre_individu);
@@ -77,6 +75,15 @@ int main(int argc, char *argv[])
                                                     event_coalescent, 
                                                     nombre_individu,
                                                     last_individu);
+
+    /*
+    Maintenant que l'on sait ou se situe l'évènement de recombinaison
+    on doit déterminer quelle sont les indidividus exacte qui la compose
+    */
+
+    int *individu_concerned_by_recombinaison = malloc(sizeof(int) * 1);
+
+    determine(individus_matrix, nombre_individu, last_individu, event_coalescent);
 
 
     free(strtree);

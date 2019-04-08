@@ -161,3 +161,51 @@ verif_same_number_individu(Matrice_arbre *matrix,
     }
   return event_coalescent; 
 }
+
+void 
+determine(Matrice_arbre *matrix, int nombre_individu ,int last_individu, float event_coalescent)
+{
+	//event_coalescent = 5.0;
+	/*
+	printf("--------------------------------------------------------------\n");
+	printf("last_individu : %d\n",last_individu);
+	printf("Les descendants de %d sont : %d et %d\n",last_individu, matrix[last_individu].descendant_1, matrix[last_individu].descendant_2);
+	printf("descendant_1 de %d : %d avec un T : %f\n",last_individu, matrix[last_individu].descendant_1, matrix[matrix[last_individu].descendant_1].Temps);
+	printf("descendant_2 de %d : %d avec un T : %f\n",last_individu, matrix[last_individu].descendant_2, matrix[matrix[last_individu].descendant_2].Temps);
+	printf("event_coalescent : %f\n",event_coalescent);
+	*/
+	/*
+	printf("descendant_1 de %d : %d avec un T : %f >= %f <= %f Temps individu %d\n",last_individu, 
+														matrix[last_individu].descendant_1, 
+														matrix[matrix[last_individu].descendant_1].Temps,
+														event_coalescent,
+														matrix[last_individu].Temps,
+														last_individu);
+	printf("descendant_2 de %d : %d avec un T : %f >= %f <= %f Temps individu %d\n",last_individu, 
+														matrix[last_individu].descendant_2, 
+														matrix[matrix[last_individu].descendant_2].Temps,
+														event_coalescent,
+														matrix[last_individu].Temps,
+														last_individu);	
+														*/
+
+	//phénomène rare arrive quand la temps de coalescence est supérieure au temps total													
+	if(event_coalescent >= matrix[last_individu].Temps && ((nombre_individu*2)-2)  == last_individu){
+			printf("%d\n",matrix[last_individu].individu);
+	}
+	if (event_coalescent >= matrix[matrix[last_individu].descendant_1].Temps &&
+		event_coalescent <= matrix[last_individu].Temps)
+	{
+		printf("%d\n",matrix[last_individu].descendant_1);
+	}
+	if (event_coalescent >= matrix[matrix[last_individu].descendant_2].Temps &&
+		event_coalescent <= matrix[last_individu].Temps)
+	{
+		printf("%d\n",matrix[last_individu].descendant_2);
+	}
+	if( matrix[last_individu].descendant_1 != -1 || matrix[last_individu].descendant_2 != -1){
+		determine(matrix, nombre_individu, matrix[last_individu].descendant_1, event_coalescent);
+		determine(matrix, nombre_individu, matrix[last_individu].descendant_2, event_coalescent);
+	}
+
+}

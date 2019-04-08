@@ -9,5 +9,6 @@ extern float random_event_coalescencence(int all_individu_recombinaison, float r
 extern int get_individu_event_coalescence(Matrice_arbre *matrix, float event_recombinaison, int last_individu);
 extern float find_closest_time(Matrice_arbre *matrix, float old_event_coalescence, int last_individu);
 extern float verif_same_number_individu(Matrice_arbre *matrix, int all_individu_recombinaison, int all_individu_coalescent ,float event_recombinaison, float event_coalescent, int nombre_individu, int last_individu);
+extern void determine(Matrice_arbre *matrix, int nombre_individu ,int last_individu, float event_coalescent);
 
 #endif /*EVENTS_H*/
