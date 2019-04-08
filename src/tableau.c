@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <malloc.h>
 #include "tableau.h"
+#include "random.h"
 
 //affiche un tableau en fonction de sa taille
 void 
@@ -44,4 +45,12 @@ void
 add_value_in_table(int *tableau, int x, int taille){
   tableau = realloc(tableau, sizeof(int)*(taille+1));
   tableau[taille] = x;
+}
+
+int 
+get_random_int_table(int *array, int length)
+{
+	int solution;
+	solution = random_position(0, length);
+	return array[solution];
 }

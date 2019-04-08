@@ -5,11 +5,11 @@
 static void choise_errors(int a){
   switch (a) {
   case 0 : {
-    fprintf(stderr, "erreur dans le nombre d'individus - ex pour un arbre avec 4 individus : ./creator_phylogenetic_tree 4 namefile\n");
+    fprintf(stderr, "erreur dans le nombre d'individus - ex pour un arbre avec 4 individus : ./coalescent_trees 4 namefile\n");
     break;
   }
   case 1 : {
-    fprintf(stderr, "erreur dans le nom du fichier - ex : ./creator_phylogenetic_tree 4 namefile\n");
+    fprintf(stderr, "erreur dans le nom du fichier - ex : ./coalescent_trees 4 namefile\n");
     break;
   }
   default:

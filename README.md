@@ -1,8 +1,8 @@
-# Creator phylogenetic tree
+# Coalescent trees
 
 ## Principe :
 
-Le programme "Creator phylogenetic tree" écrit en C est un petit programme qui génère aléatoirement un arbre phylogénétique. Plusieurs paramètres permettent de varier son application comme le nombre d'indivu ou la simulation du phénomène de recombinaison.
+Le programme "coalescent trees" écrit en C est un petit programme qui génère aléatoirement un arbre phylogénétique. Plusieurs paramètres permettent de varier son application comme le nombre d'indivu ou la simulation du phénomène de recombinaison.
 
 ## Installation :
 
@@ -16,25 +16,32 @@ Si le programme n'est pas exécutable :
 
 * sous (Debian/Ubuntu):
 ```bash
-chmod +x creator_phylogenetic_tree
+chmod +x coalescent_trees
 ```
 
 #### Il aura pour arborescence :
 
 ```bash 
-├── creator_phylogenetic_tree
+├── coalescent_trees
 ├── inc
 │   ├── errors.h
+│   ├── events.h
 │   ├── matrice_arbre.h
-│   └── newick.h
+│   ├── newick.h
+│   ├── random.h
+│   └── tableau.h
 ├── Makefile
-├── README
+├── namefile.png
 ├── README.md
 └── src
     ├── errors.c
+    ├── events.c
     ├── main_arbre.c
     ├── matrice_arbre.c
-    └── newick.c
+    ├── newick.c
+    ├── random.c
+    └── tableau.c
+
 ```
 
 ## Utilisation :
@@ -43,13 +50,13 @@ chmod +x creator_phylogenetic_tree
 L'utilisation est la suivante :
 
 ```sh
-./creator_phylogenetic_tree <interger> <namefile>
+./coalescent_trees <interger> <namefile>
 ```
 
 Example sous (Dedian/Ubuntu) :
 
 ```sh
-./creator_phylogenetic_tree 10 namefile
+./coalescent_trees 10 namefile
 ```
 La commande suivante a généré un arbre phylogénétique comportant 10 individus selectionnés de manière aléatoire et un fichier de sortie "newick" (.nwk) qui nous permettra de visualiser le résultat.
 
@@ -96,12 +103,12 @@ Visualisation du résultat à l'aide du logiciel FigTree.
 Lors de l'excution du programme l'erreur suivante apparait :
 
 ```sh
-erreur dans le nombre d'individus - ex pour un arbre avec 4 individus : ./creator_phylogenetic_tree 4 namefile
+erreur dans le nombre d'individus - ex pour un arbre avec 4 individus : ./coalescent_trees 4 namefile
 ```
 * L'erreur provient du fait qu'aucun paramètre ne précise le nombre de d'individu souhaité.
 
 ```sh
-erreur dans le nom du fichier - ex : ./creator_phylogenetic_tree 4 namefile
+erreur dans le nom du fichier - ex : ./coalescent_trees 4 namefile
 ```
 * L'erreur vient du fait qu'il n'y a aucun nom qui a été précisé dans les paramètres.
 

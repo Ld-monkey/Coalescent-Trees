@@ -81,11 +81,16 @@ int main(int argc, char *argv[])
     Maintenant que l'on sait ou se situe l'évènement de recombinaison
     on doit déterminer quelle sont les indidividus exacte qui la compose
     */
-
+    printf("--------------------------------------------------------------\n");
     int *individu_concerned_by_coalescence = malloc(sizeof(int) * 1);
     int length_table = 0;
     determine(individus_matrix, individu_concerned_by_coalescence, &length_table, nombre_individu, last_individu, event_coalescent);
     diplay_table(individu_concerned_by_coalescence, length_table);
+
+    //prend un individu au hazard parmit le tableau || Tirer au sort parmi les lignées présentes
+    int individu_selectioned;
+    individu_selectioned = get_random_int_table(individu_concerned_by_coalescence, length_table);
+    printf("L'individu selectionné au hazard dans le tableau est %d\n",individu_selectioned);
 
 
     free(strtree);

@@ -4,7 +4,7 @@ INC_DIR = inc
 SRC_DIR = src
 SOURCE = $(wildcard $(SRC_DIR)/*.c)
 OBJECTS = $(patsubst %, $(SRC_DIR)/%, $(notdir $(SOURCE:.c=.o)))
-TITLE = creator_phylogenetic_tree
+TITLE = coalescent_trees
 
 $(TITLE): $(OBJECTS)
 	$(CC) -o $@ $^ $(CFLAGS)
