@@ -3,6 +3,7 @@
 #include <float.h>
 #include <ctype.h>
 #include "matrice_arbre.h"
+#include "tableau.h"
 #include "errors.h"
 #include "newick.h"
 #include "events.h"
@@ -81,12 +82,14 @@ int main(int argc, char *argv[])
     on doit déterminer quelle sont les indidividus exacte qui la compose
     */
 
-    int *individu_concerned_by_recombinaison = malloc(sizeof(int) * 1);
-
-    determine(individus_matrix, nombre_individu, last_individu, event_coalescent);
+    int *individu_concerned_by_coalescence = malloc(sizeof(int) * 1);
+    int length_table = 0;
+    determine(individus_matrix, individu_concerned_by_coalescence, &length_table, nombre_individu, last_individu, event_coalescent);
+    diplay_table(individu_concerned_by_coalescence, length_table);
 
 
     free(strtree);
+    free(individu_concerned_by_coalescence);
     return(EXIT_SUCCESS);
   }
 }

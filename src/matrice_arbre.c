@@ -4,27 +4,8 @@
 #include <math.h>
 #include <float.h>
 #include "matrice_arbre.h"
+#include "tableau.h"
 #include "random.h"
-
-static int* resize_size_table(int *tableau, int taille)
-{
-  int *tmp = malloc(sizeof(int) *(taille-1));
-  for ( int i = 0; i < taille - 1; i++)
-  {
-    tmp[i] = tableau[i];
-  }
-  tableau = tmp;
-  taille = taille - 1;  
-  return tmp;
-}
-
-//decaler une valeur d'un tableau
-static void switch_value(int *tableau, int indice, int taille){
-  int i;
-  for(i = indice; i < taille - 1; i++){
-    tableau[i] = tableau[i+1];
-  }
-}
 
 //ajoute un individu
 static void add_individu(Matrice_arbre *m, int individu){
@@ -63,15 +44,6 @@ void initiate_matrix(Matrice_arbre *matrix, int nombre_individu_total){
   }
 }
 
-//affiche un tableau en fonction de sa taille
-void diplay_table(int *tableau, int taille){
-  printf("[");
-  for ( int i = 0; i < taille; i++ ){
-    printf(" %d", tableau[i]);
-  }
-  printf(" ]\n");
-}
-
 //retourne le nombre d'individu (2 * individu)-1
 int get_individus_number(int n){
   return (n*2)-1;
@@ -94,12 +66,6 @@ void get_all_informations(Matrice_arbre *matrix, int nombre_individu, int nombre
 //ajoute un ancêtre
 static void add_ancestor_in_matrix(Matrice_arbre *m, int ancestor){
   m->ancetre = ancestor;
-}
-
-//ajoute une valeur dans un tableau
-static void add_value_in_table(int *tableau, int x, int taille){
-  tableau = realloc(tableau, sizeof(int)*(taille+1));
-  tableau[taille] = x;
 }
 
 //ajoute le Ti d'un individu

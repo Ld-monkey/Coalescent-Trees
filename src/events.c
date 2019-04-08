@@ -3,6 +3,7 @@
 #include <math.h>
 #include <float.h>
 #include "matrice_arbre.h"
+#include "tableau.h"
 #include "random.h"
 #include "events.h"
 
@@ -163,49 +164,34 @@ verif_same_number_individu(Matrice_arbre *matrix,
 }
 
 void 
-determine(Matrice_arbre *matrix, int nombre_individu ,int last_individu, float event_coalescent)
+determine(Matrice_arbre *matrix, int *array, int *lenght, int nombre_individu ,int last_individu, float event_coalescent)
 {
-	//event_coalescent = 5.0;
-	/*
-	printf("--------------------------------------------------------------\n");
-	printf("last_individu : %d\n",last_individu);
-	printf("Les descendants de %d sont : %d et %d\n",last_individu, matrix[last_individu].descendant_1, matrix[last_individu].descendant_2);
-	printf("descendant_1 de %d : %d avec un T : %f\n",last_individu, matrix[last_individu].descendant_1, matrix[matrix[last_individu].descendant_1].Temps);
-	printf("descendant_2 de %d : %d avec un T : %f\n",last_individu, matrix[last_individu].descendant_2, matrix[matrix[last_individu].descendant_2].Temps);
-	printf("event_coalescent : %f\n",event_coalescent);
-	*/
-	/*
-	printf("descendant_1 de %d : %d avec un T : %f >= %f <= %f Temps individu %d\n",last_individu, 
-														matrix[last_individu].descendant_1, 
-														matrix[matrix[last_individu].descendant_1].Temps,
-														event_coalescent,
-														matrix[last_individu].Temps,
-														last_individu);
-	printf("descendant_2 de %d : %d avec un T : %f >= %f <= %f Temps individu %d\n",last_individu, 
-														matrix[last_individu].descendant_2, 
-														matrix[matrix[last_individu].descendant_2].Temps,
-														event_coalescent,
-														matrix[last_individu].Temps,
-														last_individu);	
-														*/
-
-	//phénomène rare arrive quand la temps de coalescence est supérieure au temps total													
+	//event_coalescent = 5.0;											
 	if(event_coalescent >= matrix[last_individu].Temps && ((nombre_individu*2)-2)  == last_individu){
-			printf("%d\n",matrix[last_individu].individu);
+			//printf("%d\n",matrix[last_individu].individu);
+			add_value_in_table(array, matrix[last_individu].individu, *lenght);
+			*lenght += 1;
+			//printf("lenght %d\n",*lenght);
 	}
 	if (event_coalescent >= matrix[matrix[last_individu].descendant_1].Temps &&
 		event_coalescent <= matrix[last_individu].Temps)
 	{
-		printf("%d\n",matrix[last_individu].descendant_1);
+		add_value_in_table(array, matrix[last_individu].descendant_1, *lenght);
+		*lenght += 1;
+		//printf("lenght %d\n",*lenght);
+		//printf("%d\n",matrix[last_individu].descendant_1);
 	}
 	if (event_coalescent >= matrix[matrix[last_individu].descendant_2].Temps &&
 		event_coalescent <= matrix[last_individu].Temps)
-	{
-		printf("%d\n",matrix[last_individu].descendant_2);
+	{;
+		add_value_in_table(array, matrix[last_individu].descendant_2, *lenght);
+		*lenght += 1;
+		//printf("lenght %d\n",*lenght);
+		//printf("%d\n",matrix[last_individu].descendant_2);
 	}
 	if( matrix[last_individu].descendant_1 != -1 || matrix[last_individu].descendant_2 != -1){
-		determine(matrix, nombre_individu, matrix[last_individu].descendant_1, event_coalescent);
-		determine(matrix, nombre_individu, matrix[last_individu].descendant_2, event_coalescent);
+		determine(matrix, array, lenght, nombre_individu, matrix[last_individu].descendant_1, event_coalescent);
+		determine(matrix, array, lenght, nombre_individu, matrix[last_individu].descendant_2, event_coalescent);
 	}
 
 }
