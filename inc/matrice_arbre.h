@@ -21,11 +21,10 @@ extern int  get_individus_number(int n);
 extern void get_all_informations(Matrice_arbre *matrix, int nombre_individu, int nombre_individu_total);
 extern void create_phylogenetic_tree(Matrice_arbre *matrix, int *array, int array_start_individu, int nombre_individu, int nombre_individu_total);
 
+//concerne essentiellement les évènement de recombinaison faire un object spécial recombinaison
 extern float get_somme_branches(Matrice_arbre *matrix, int last_individu);
 extern int get_last_individu(Matrice_arbre *matrix, int individu);
-extern float random_recombinaison(float Temps);
-extern int get_individu_event_recombinaison(Matrice_arbre *matrix, float event_recombinaison, int last_individu);
-extern float get_time_event_recombinaison(Matrice_arbre *matrix, float event_recombinaison, int last_individu);
-extern int get_all_individu_concerned_by_recombinaison(Matrice_arbre *matrix, float event_recombinaison, int nombre_individu);
+
+
 
 #endif /*MATRICE_ARBRE*/

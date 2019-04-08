@@ -5,6 +5,7 @@
 #include "matrice_arbre.h"
 #include "errors.h"
 #include "newick.h"
+#include "events.h"
 
 int main(int argc, char *argv[])
 {
@@ -51,11 +52,34 @@ int main(int argc, char *argv[])
     //int *individu_concerned_by_recombinaison = malloc(sizeof(int) * 1);
 
     int all_individu_recombinaison;
-    all_individu_recombinaison = get_all_individu_concerned_by_recombinaison(individus_matrix, real_time_recombinaison, nombre_individu);
+    all_individu_recombinaison = get_all_individu_concerned_by_event(individus_matrix, real_time_recombinaison, nombre_individu);
     printf("le nombre d'individu pour la recombinaison est %d\n", all_individu_recombinaison);
+
+    float event_coalescent;
+    event_coalescent = random_event_coalescencence(all_individu_recombinaison, real_time_recombinaison);
+    printf("L'évènement de coalescence a lieu en %f\n",event_coalescent);
+
+    //on regarde pour ce temps de coalescence
+    int all_individu_coalescent;
+    all_individu_coalescent = get_all_individu_concerned_by_event(individus_matrix, event_coalescent, nombre_individu);
+    printf("le nombre d'individu pour la coalescence est %d\n",all_individu_coalescent);
+
+    /* on verifie si le nombre d'individu n'est pas différent
+    entre la recombinaison et la coalescence :
+        * si c'est différent on re-calcule un l'évènement de 
+        coalescence en fonction du nombre d'individu pour la coalescence.
+        * sinon on ne fait rien.
+    */
+    event_coalescent = verif_same_number_individu(individus_matrix, 
+                                                    all_individu_recombinaison,
+                                                    all_individu_coalescent, 
+                                                    real_time_recombinaison, 
+                                                    event_coalescent, 
+                                                    nombre_individu,
+                                                    last_individu);
+
 
     free(strtree);
     return(EXIT_SUCCESS);
-    
   }
 }
