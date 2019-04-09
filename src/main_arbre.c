@@ -47,20 +47,20 @@ int main(int argc, char *argv[])
     all_individu_recombinaison = get_all_individu_concerned_by_event(individus_matrix, real_time_recombinaison, nombre_individu);
 
     printf("--------------------------------------------------------------\n");
-    printf("L'évènement de recombinaison pris au hazard entre [0, %f] = %f.\n",somme_branches, random_time_recombinaison);
+    //printf("L'évènement de recombinaison pris au hazard entre [0, %f] = %f.\n",somme_branches, random_time_recombinaison);
     printf("L'évènement de recombinaison a eu lieu sur l'individu %d.\n",recombinaison_individu);
-    printf("Le temps pour la recombinaison est %f .\n", real_time_recombinaison);  
-    printf("le nombre d'individu pour la recombinaison est %d\n", all_individu_recombinaison);
+    printf("Le temps pour la recombinaison est %f.\n", real_time_recombinaison);  
+    printf("le nombre d'individu pour la recombinaison est %d.\n", all_individu_recombinaison);
     printf("--------------------------------------------------------------\n");
 
     float event_coalescent;
     event_coalescent = random_event_coalescencence(all_individu_recombinaison, real_time_recombinaison);
-    printf("L'évènement de coalescence a lieu en %f\n",event_coalescent);
+    printf("L'évènement de coalescence a lieu en %f.\n",event_coalescent);
 
     //on regarde pour ce temps de coalescence
     int all_individu_coalescent;
     all_individu_coalescent = get_all_individu_concerned_by_event(individus_matrix, event_coalescent, nombre_individu);
-    printf("le nombre d'individu pour la coalescence est %d\n",all_individu_coalescent);
+    printf("le nombre d'individu pour la coalescence est %d.\n",all_individu_coalescent);
 
     /* on verifie si le nombre d'individu n'est pas différent
     entre la recombinaison et la coalescence :
@@ -89,9 +89,40 @@ int main(int argc, char *argv[])
     //prend un individu au hazard parmit le tableau || Tirer au sort parmi les lignées présentes
     int individu_selectioned;
     individu_selectioned = get_random_int_table(individu_concerned_by_coalescence, length_table);
-    printf("L'individu selectionné au hazard dans le tableau est %d\n",individu_selectioned);
+    printf("L'individu selectionné au hazard dans le tableau est %d.\n",individu_selectioned);
 
     //the next step
+    // si deja l'individu selectionné au hazard dans le tableau différent de l'évènement de recombinaison
+    //on peut faire le change de temp et d'ancêtre sinon on ne fait rien
+    /*
+
+     * Dans le cas ou ils ont le même ancêtre :
+
+        * lors d'un evévènement de recombinaison on change la longueur des branches :
+        longueur_branche_de_l'individu_recombinaison = event_coalescence
+        pour l'individu de recombinaison et l'individu selectionné
+         * et la longueur de ou des ancetres on ajoute plus la longueur suivante :
+        longueur_branche_de_l'individu_recombinaison - event_coalescence.
+
+     * Si ils n'ont pas le même ancêtre :
+
+        * on change les ancêtre :
+            * l 'ancetre de l'individu de coalescence devient aussi l'ancetre de l'individu selectionnée
+            * on ajoute la longeur de branche pour ancetre : longueur_branche_de_l'individu_recombinaison - event_coalescence.
+            * on change les différents descendant de l'ancêtre qui sont :
+                l'individu selecitonné + la l'individu de recombinaison
+            * on change les descendant des individu au dessus ainsi que leurs ancêtres (problème par ou partir pour
+            retrouver le chemin des nouveaux ancêtres)
+
+
+     *créer un nouveau file .nwk pour le après (et voir la différence).
+
+    */
+    if (individu_selectioned != event_coalescent)
+    {
+        
+    }else
+        printf("On ne change rien car la coalescence se situe sur la meme branche.\n");
 
 
     free(strtree);

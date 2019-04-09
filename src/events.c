@@ -112,7 +112,7 @@ find_closest_time(Matrice_arbre *matrix, float old_event_coalescence, int last_i
     //printf("%f > %f\n",matrix[i].Temps,old_event_coalescence);
     if(old_event_coalescence > matrix[i].Temps){
       new_time = matrix[i].Temps;
-      printf("new_time : %f, et i %d\n",new_time, i);
+      //printf("new_time : %f, et i %d\n",new_time, i);
     }
   }
   return new_time;
@@ -128,9 +128,9 @@ verif_same_number_individu(Matrice_arbre *matrix,
                                 int nombre_individu,
                                 int last_individu)
 {
-    printf("--------------------------------------------------------------\n");
     if ( all_individu_recombinaison != all_individu_coalescent)
     {
+        printf("--------------------------------------------------------------\n");
         printf("individu recombinaison %d ≠ %d individu coalescence\n", all_individu_recombinaison, all_individu_coalescent);   
         //on a deja le nombre d'individu = all_individu_coalescent ( qui est différent)
         //+ trouver l'ancêtre Tx ( et plus le temps réel de recombinaison) qui lui correspond 
