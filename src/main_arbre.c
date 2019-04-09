@@ -43,16 +43,15 @@ int main(int argc, char *argv[])
     random_time_recombinaison = random_recombinaison(somme_branches);
     recombinaison_individu = get_individu_event_recombinaison(individus_matrix, random_time_recombinaison, last_individu);
     real_time_recombinaison = get_time_event_recombinaison(individus_matrix, random_time_recombinaison, last_individu);
+    int all_individu_recombinaison;
+    all_individu_recombinaison = get_all_individu_concerned_by_event(individus_matrix, real_time_recombinaison, nombre_individu);
 
     printf("--------------------------------------------------------------\n");
     printf("L'évènement de recombinaison pris au hazard entre [0, %f] = %f.\n",somme_branches, random_time_recombinaison);
     printf("L'évènement de recombinaison a eu lieu sur l'individu %d.\n",recombinaison_individu);
-    printf("Le temps pour la recombinaison est %f .\n", real_time_recombinaison);
-    printf("--------------------------------------------------------------\n");
-
-    int all_individu_recombinaison;
-    all_individu_recombinaison = get_all_individu_concerned_by_event(individus_matrix, real_time_recombinaison, nombre_individu);
+    printf("Le temps pour la recombinaison est %f .\n", real_time_recombinaison);  
     printf("le nombre d'individu pour la recombinaison est %d\n", all_individu_recombinaison);
+    printf("--------------------------------------------------------------\n");
 
     float event_coalescent;
     event_coalescent = random_event_coalescencence(all_individu_recombinaison, real_time_recombinaison);

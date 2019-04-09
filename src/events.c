@@ -72,14 +72,14 @@ float random_event_coalescencence(int all_individu_recombinaison, float real_tim
 {
   //printf("--------------------------------------------------------------\n");
   float rand_float = random_float();
-  printf("random float [0,1] : %g\n", rand_float);
+  //printf("random float [0,1] : %g\n", rand_float);
   float logarithme = -log(rand_float);
   //printf("-log(%g) : %g\n",rand_float,logarithme);
   float esperance = ((all_individu_recombinaison*(all_individu_recombinaison-1))/2);;
   //printf("esperance : %g\n", esperance);
   float result = logarithme/esperance;
   //printf("logarithme/esperance : %f\n",result);;
-  printf("logarithme/esperance + real_time_recombinaison %f\n",result + real_time_recombinaison);
+  //printf("logarithme/esperance + real_time_recombinaison %f\n",result + real_time_recombinaison);
   return (result + real_time_recombinaison);
 }
 
@@ -107,11 +107,12 @@ find_closest_time(Matrice_arbre *matrix, float old_event_coalescence, int last_i
   printf("Rappel l'évènement de coalescente a eu lieu : %f\n", old_event_coalescence);
   //printf("last_individu : %d\n",last_individu);
   
-  for (int i = 0; i < last_individu; ++i)
+  for (int i = 0; i < last_individu + 1; ++i)
   {
     //printf("%f > %f\n",matrix[i].Temps,old_event_coalescence);
     if(old_event_coalescence > matrix[i].Temps){
       new_time = matrix[i].Temps;
+      printf("new_time : %f, et i %d\n",new_time, i);
     }
   }
   return new_time;
@@ -157,9 +158,8 @@ verif_same_number_individu(Matrice_arbre *matrix,
                                     nombre_individu,
                                     last_individu);
         }
-    }else{
-      printf("individu recombinaison %d = %d individu coalescence\n", all_individu_recombinaison, all_individu_coalescent);
     }
+  //printf("individu recombinaison %d = %d individu coalescence\n", all_individu_recombinaison, all_individu_coalescent);
   return event_coalescent; 
 }
 
@@ -193,5 +193,4 @@ determine(Matrice_arbre *matrix, int *array, int *lenght, int nombre_individu ,i
 		determine(matrix, array, lenght, nombre_individu, matrix[last_individu].descendant_1, event_coalescent);
 		determine(matrix, array, lenght, nombre_individu, matrix[last_individu].descendant_2, event_coalescent);
 	}
-
 }
