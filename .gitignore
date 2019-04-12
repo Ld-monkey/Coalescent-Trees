@@ -32,3 +32,5 @@
 *.dSYM/
 
 newick\.nwk
+
+*.nwk

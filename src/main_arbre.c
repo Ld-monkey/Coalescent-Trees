@@ -35,6 +35,7 @@ int main(int argc, char *argv[])
     get_all_informations(individus_matrix, 0, nombre_individu_total);
     
     //chaine de caractère recupere la typologie du format newick puis creation d'un fichier newick .nwk
+    strcat(name_file, "_before_coalescence");
     strtree = PrintTree(0, individus_matrix, strtree, &position, nombre_individu);
     create_newick_file(&fptr, name_file, strtree);
 
@@ -92,45 +93,12 @@ int main(int argc, char *argv[])
     individu_selectioned = get_random_int_table(individu_concerned_by_coalescence, length_table);
     printf("L'individu selectionné au hazard dans le tableau est %d.\n",individu_selectioned);
 
-    //the next step
-    // si deja l'individu selectionné au hazard dans le tableau différent de l'évènement de recombinaison
-    //on peut faire le change de temp et d'ancêtre sinon on ne fait rien
-    /*
-
-    /!\ matrix[i].longueur_branche = matrix[matrix[i].ancetre].Temps - matrix[i].Temps;
-        
-
-     * Dans le cas ou l'évènement est suprérieur au dernier de la branche
-        on change sa longeur de branche
-
-     * Dans le cas ou ils ont le même ancêtre :
-
-        * lors d'un evévènement de recombinaison on change la longueur des branches :
-        longueur_branche_de_l'individu_recombinaison = event_coalescence
-        pour l'individu de recombinaison et l'individu selectionné
-         * et la longueur de ou des ancetres on ajoute plus la longueur suivante :
-        longueur_branche_de_l'individu_recombinaison - event_coalescence.
-
-     * Si ils n'ont pas le même ancêtre :
-
-        * on change les ancêtre :
-            * l 'ancetre de l'individu de coalescence devient aussi l'ancetre de l'individu selectionnée
-            * on ajoute la longeur de branche pour ancetre : longueur_branche_de_l'individu_recombinaison - event_coalescence.
-            * on change les différents descendant de l'ancêtre qui sont :
-                l'individu selecitonné + la l'individu de recombinaison
-            * on change les descendant des individu au dessus ainsi que leurs ancêtres (problème par ou partir pour
-            retrouver le chemin des nouveaux ancêtres   )
-
-
-     *créer un nouveau file .nwk pour le après (et voir la différence).
-
-    */
-    if (individu_selectioned != event_coalescent)
+    if (individu_selectioned != recombinaison_individu)
     {
-        printf("individu_selectioned != event_coalescent\n");
+        printf("individu_selectioned %d != %d recombinaison_individu\n",individu_selectioned, recombinaison_individu);
 
         //dans le cas rare ou l'évènement de coalescence se situe au dessus du dernier temps
-        if (individus_matrix[last_individu].Temps < event_coalescent)
+        if (individus_matrix[last_individu].Temps < event_coalescent )
         {
             //faire attention a la somme des descendant
             if (individus_matrix[individus_matrix[last_individu].descendant_1].descendant_1 == -1 &&
@@ -173,26 +141,8 @@ int main(int argc, char *argv[])
                     individus_matrix[individus_matrix[individus_matrix[last_individu].descendant_2].descendant_2].longueur_branche;
                 }
             }
-            //change la longueur des branches
-            /*
-            printf("last indi %d\n",last_individu);
-
-            printf("longueur dsc 1 :%f\n",individus_matrix[individus_matrix[last_individu].descendant_1].longueur_branche );
-            printf("event_coalescent :%f\n",event_coalescent );
-            printf("soustraction desc 1 %f\n",event_coalescent - 
-                                    individus_matrix[individus_matrix[last_individu].descendant_1].longueur_branche);
-            printf("longueur_branche_1 %f\n",individus_matrix[individus_matrix[last_individu].descendant_1].longueur_branche + 
-                (event_coalescent-individus_matrix[individus_matrix[last_individu].descendant_1].longueur_branche));
-            */
-            /*
-            printf("longueur dsc 2 :%f\n",individus_matrix[individus_matrix[last_individu].descendant_2].longueur_branche );
-            printf("event_coalescent :%f\n",event_coalescent );
-            printf("soustraction desc 2 %f\n",event_coalescent - 
-                                    individus_matrix[individus_matrix[last_individu].descendant_2].longueur_branche);
-            printf("longueur_branche_1 %f\n",individus_matrix[individus_matrix[last_individu].descendant_2].longueur_branche + 
-                (event_coalescent-individus_matrix[individus_matrix[last_individu].descendant_2].longueur_branche));
-            */
-            //actualiser les sommes des branches
+            //get_all_informations(individus_matrix, 0, nombre_individu_total);
+                        //actualiser les sommes des branches
             //float result = 0.0;
             //ajoute les longueurs de branches (même bout de code dans la fonction create_arbre_phylogenetic spliter)
             /*
@@ -203,7 +153,121 @@ int main(int argc, char *argv[])
                 }
             individus_matrix[nombre_individu_total - 1].somme_lb = result;
             */
-            get_all_informations(individus_matrix, 0, nombre_individu_total);
+        }//fin de la condition du cas rare
+
+        //le cas ou ils ont le même ancêtre 
+        else if (individus_matrix[individu_selectioned].ancetre == individus_matrix[recombinaison_individu].ancetre)
+        {
+            printf("On a les même ancêtres\n");
+            int i = individus_matrix[individu_selectioned].ancetre;
+            float total_lb_ancetre_commun = 0.0;
+            while (individus_matrix[i].descendant_1 != -1){
+                i = individus_matrix[i].descendant_1;
+                total_lb_ancetre_commun += individus_matrix[i].longueur_branche;
+            }
+            printf("total_lb_ancetre_commun %f\n", total_lb_ancetre_commun);
+
+            //si l'ancetre de son ancetre est la dernier branche sinon on cherche cette derniere branche
+            individus_matrix[individus_matrix[individu_selectioned].ancetre].longueur_branche += 
+            individus_matrix[individu_selectioned].longueur_branche + (total_lb_ancetre_commun - event_coalescent);
+
+            individus_matrix[individus_matrix[individus_matrix[individu_selectioned].ancetre].descendant_1].longueur_branche -=
+            (total_lb_ancetre_commun - event_coalescent);
+
+            individus_matrix[individus_matrix[individus_matrix[individu_selectioned].ancetre].descendant_2].longueur_branche -=
+            (total_lb_ancetre_commun - event_coalescent);
+        }
+
+        // dans le cas ou l'ancetre du l'individu de recombinaison est un descendant de l'évènement de recombinaison
+        //très similaire a la premier condition
+        else if (recombinaison_individu == individus_matrix[individu_selectioned].descendant_1
+            || recombinaison_individu == individus_matrix[individu_selectioned].descendant_2)
+        {
+            printf("Cas particulier : L'ancetre de l'individu de recombinaison est un descendant de l'évènement de recombinaison.\n");
+            int i = individus_matrix[individu_selectioned].descendant_1;
+            float somme_total = individus_matrix[individus_matrix[individu_selectioned].descendant_1].longueur_branche;
+            while (individus_matrix[i].descendant_1 != -1){
+                i = individus_matrix[i].descendant_1;
+                somme_total += individus_matrix[i].longueur_branche;
+            }
+            /*
+            printf("somme total : %f\n",somme_total);
+            
+            printf("somme total - event_coalescence %f\n",
+                (event_coalescent - somme_total));
+            */
+            individus_matrix[individus_matrix[individu_selectioned].descendant_1].longueur_branche +=
+            (event_coalescent - somme_total);
+
+            individus_matrix[individus_matrix[individu_selectioned].descendant_2].longueur_branche +=
+            (event_coalescent - somme_total);
+
+            individus_matrix[individu_selectioned].longueur_branche -=
+            (event_coalescent - somme_total);    
+        }
+        //le cas ou ils n'ont pas le même ancêtre
+        else if(individus_matrix[individu_selectioned].ancetre != individus_matrix[recombinaison_individu].ancetre)
+        {
+            printf("--------------------------------------------------------------\n");
+
+            //ok
+            if (individus_matrix[individu_selectioned].descendant_1 == individus_matrix[recombinaison_individu].ancetre
+                || individus_matrix[individu_selectioned].descendant_2 == individus_matrix[recombinaison_individu].ancetre){
+                if (individus_matrix[individus_matrix[recombinaison_individu].ancetre].descendant_1 == recombinaison_individu)
+                {
+                    printf("on modifie le second descendant_2\n");
+                    printf("i : %d, d_1 : %d, d_2 : %d, anc : %d\n",individu_selectioned,
+                                        individus_matrix[individu_selectioned].descendant_1,
+                                        individus_matrix[recombinaison_individu].descendant_1,
+                                        individus_matrix[recombinaison_individu].ancetre);
+                }else{
+                    printf("on modifie le second descendant_1\n");
+                    printf("i : %d, d_1 : %d, d_2 : %d, anc : %d\n",individu_selectioned,
+                                        individus_matrix[individu_selectioned].descendant_1,
+                                        individus_matrix[recombinaison_individu].descendant_2,
+                                        individus_matrix[recombinaison_individu].ancetre);
+                }
+            
+            }else{
+            printf("i : %d, d_1 : %d, d_2 : %d, anc : %d\n",individu_selectioned,
+                                        individus_matrix[individu_selectioned].descendant_1,
+                                        individus_matrix[individu_selectioned].descendant_2,
+                                        individus_matrix[recombinaison_individu].ancetre);
+            }
+
+            //ok
+            if (individus_matrix[individus_matrix[recombinaison_individu].ancetre].descendant_1 == recombinaison_individu)
+            { 
+                /*
+                printf("on est dans le cas classique ou :\n");
+                printf("individus_matrix[individus_matrix[recombinaison_individu].ancetre].descendant_1 == recombinaison_individu\n");
+                printf("on modifie le d_2\n");
+                printf("l'ancetre de l'individu selectionné va devenir l'ancetre pour l'individu qui est l'ancetre de l'individu recombiné\n");
+                printf("l'ancetre de l'individu_selectioné est %d\n",individus_matrix[individu_selectioned].ancetre);
+                printf("l'ancetre de l'individu de recombinaison est %d\n",individus_matrix[recombinaison_individu].ancetre);
+                printf("on aurait donc :\n");
+                */
+                printf("i : %d, d_1 : %d, d_2 : %d, anc : %d\n", individus_matrix[recombinaison_individu].ancetre,
+                                                                individus_matrix[individus_matrix[recombinaison_individu].ancetre].descendant_1,
+                                                                individu_selectioned,
+                                                                individus_matrix[individu_selectioned].ancetre); 
+            }else{
+                /*
+                printf("on est dans le moin cas classique ou :\n");
+                printf("individus_matrix[individus_matrix[recombinaison_individu].ancetre].descendant_1 != recombinaison_individu\n");
+                printf("on modifie le d_1\n");
+                printf("l'ancetre de l'individu selectionné va devenir l'ancetre pour l'individu qui est l'ancetre de l'individu recombiné\n");
+                printf("l'ancetre de l'individu_selectioné est %d\n",individus_matrix[individu_selectioned].ancetre);
+                printf("l'ancetre de l'individu de recombinaison est %d\n",individus_matrix[recombinaison_individu].ancetre);
+                printf("on aurait donc :\n");
+                */
+                printf("i : %d, d_1 : %d, d_2 : %d, anc : %d\n", individus_matrix[recombinaison_individu].ancetre,
+                                                                individu_selectioned,
+                                                                individus_matrix[individus_matrix[recombinaison_individu].ancetre].descendant_2,
+                                                                individus_matrix[individu_selectioned].ancetre);
+            }
+
+
         }
     }else{
         printf("On ne change rien car la coalescence se situe sur la meme branche.\n");
@@ -211,15 +275,15 @@ int main(int argc, char *argv[])
 
     //creation d'un nouveau file newick
     char *strtree2 = (char *)malloc(1000*(sizeof(char)));
-    char *name_file2 = argv[2];
-    strcat(name_file2, "_after_coalescence");
+    //faire une copy de pointeur
+    char *name_file2 = strcat(argv[2], "_after_coalescence");
     int position2 = 0;
     FILE fptr2; 
 
     //chaine de caractère recupere la typologie du format newick puis creation d'un fichier newick .nwk
     strtree = PrintTree(0, individus_matrix, strtree2, &position2, nombre_individu);
     create_newick_file(&fptr2, name_file2, strtree2);
-
+    
     free(strtree);
     free(strtree2);
     free(individu_concerned_by_coalescence);
