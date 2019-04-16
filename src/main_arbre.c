@@ -93,6 +93,10 @@ int main(int argc, char *argv[])
     individu_selectioned = get_random_int_table(individu_concerned_by_coalescence, length_table);
     printf("L'individu selectionné au hazard dans le tableau est %d.\n",individu_selectioned);
 
+    int compteur_cache;
+    int compteur_silencieux;
+    int compteur_non_silencieux;
+
     if (individu_selectioned != recombinaison_individu)
     {
         printf("individu_selectioned %d != %d recombinaison_individu\n",individu_selectioned, recombinaison_individu);
@@ -100,6 +104,7 @@ int main(int argc, char *argv[])
         //dans le cas rare ou l'évènement de coalescence se situe au dessus du dernier temps
         if (individus_matrix[last_individu].Temps < event_coalescent )
         {
+            compteur_silencieux++;
             //faire attention a la somme des descendant
             if (individus_matrix[individus_matrix[last_individu].descendant_1].descendant_1 == -1 &&
                 individus_matrix[individus_matrix[last_individu].descendant_1].descendant_2 == -1)
@@ -158,6 +163,7 @@ int main(int argc, char *argv[])
         //le cas ou ils ont le même ancêtre 
         else if (individus_matrix[individu_selectioned].ancetre == individus_matrix[recombinaison_individu].ancetre)
         {
+            compteur_silencieux++;
             printf("On a les même ancêtres\n");
             int i = individus_matrix[individu_selectioned].ancetre;
             float total_lb_ancetre_commun = 0.0;
@@ -183,6 +189,7 @@ int main(int argc, char *argv[])
         else if (recombinaison_individu == individus_matrix[individu_selectioned].descendant_1
             || recombinaison_individu == individus_matrix[individu_selectioned].descendant_2)
         {
+            compteur_silencieux++;
             printf("Cas particulier : L'ancetre de l'individu de recombinaison est un descendant de l'évènement de recombinaison.\n");
             int i = individus_matrix[individu_selectioned].descendant_1;
             float somme_total = individus_matrix[individus_matrix[individu_selectioned].descendant_1].longueur_branche;
@@ -208,7 +215,10 @@ int main(int argc, char *argv[])
         //le cas ou ils n'ont pas le même ancêtre
         else if(individus_matrix[individu_selectioned].ancetre != individus_matrix[recombinaison_individu].ancetre)
         {
+            compteur_non_silencieux++;
             printf("--------------------------------------------------------------\n");
+            int ind_select_desc_1, ind_select_desc_2, ind_select_anc;
+            int anc_ind_recomb_desc_1, anc_ind_recomb_desc_2, anc_ind_recomb_anc;
 
             //ok
             if (individus_matrix[individu_selectioned].descendant_1 == individus_matrix[recombinaison_individu].ancetre
@@ -220,12 +230,22 @@ int main(int argc, char *argv[])
                                         individus_matrix[individu_selectioned].descendant_1,
                                         individus_matrix[recombinaison_individu].descendant_1,
                                         individus_matrix[recombinaison_individu].ancetre);
+                    //application dans des variables
+                                        ind_select_desc_1 = individus_matrix[individu_selectioned].descendant_1;
+                                        ind_select_desc_2 = individus_matrix[recombinaison_individu].descendant_1;
+                                        ind_select_anc = individus_matrix[recombinaison_individu].ancetre;
+
+
                 }else{
                     printf("on modifie le second descendant_1\n");
                     printf("i : %d, d_1 : %d, d_2 : %d, anc : %d\n",individu_selectioned,
                                         individus_matrix[individu_selectioned].descendant_1,
                                         individus_matrix[recombinaison_individu].descendant_2,
                                         individus_matrix[recombinaison_individu].ancetre);
+                    //applicaiton des variables
+                                        ind_select_desc_1 = individus_matrix[individu_selectioned].descendant_1;
+                                        ind_select_desc_2 = individus_matrix[recombinaison_individu].descendant_2;
+                                        ind_select_anc = individus_matrix[recombinaison_individu].ancetre;
                 }
             
             }else{
@@ -233,6 +253,10 @@ int main(int argc, char *argv[])
                                         individus_matrix[individu_selectioned].descendant_1,
                                         individus_matrix[individu_selectioned].descendant_2,
                                         individus_matrix[recombinaison_individu].ancetre);
+                    //applicaiton des variables
+                                        ind_select_desc_1 = individus_matrix[individu_selectioned].descendant_1;
+                                        ind_select_desc_2 = individus_matrix[individu_selectioned].descendant_2;
+                                        ind_select_anc = individus_matrix[recombinaison_individu].ancetre;
             }
 
             //ok
@@ -250,7 +274,12 @@ int main(int argc, char *argv[])
                 printf("i : %d, d_1 : %d, d_2 : %d, anc : %d\n", individus_matrix[recombinaison_individu].ancetre,
                                                                 individus_matrix[individus_matrix[recombinaison_individu].ancetre].descendant_1,
                                                                 individu_selectioned,
-                                                                individus_matrix[individu_selectioned].ancetre); 
+                                                                individus_matrix[individu_selectioned].ancetre);
+                //application sur des variables:
+                anc_ind_recomb_desc_1 = individus_matrix[individus_matrix[recombinaison_individu].ancetre].descendant_1;
+                anc_ind_recomb_desc_2 = individu_selectioned;
+                anc_ind_recomb_anc = individus_matrix[individu_selectioned].ancetre;
+
             }else{
                 /*
                 printf("on est dans le moin cas classique ou :\n");
@@ -265,18 +294,312 @@ int main(int argc, char *argv[])
                                                                 individu_selectioned,
                                                                 individus_matrix[individus_matrix[recombinaison_individu].ancetre].descendant_2,
                                                                 individus_matrix[individu_selectioned].ancetre);
+                //application sur des variables:
+                anc_ind_recomb_desc_1 = individu_selectioned;
+                anc_ind_recomb_desc_2 = individus_matrix[individus_matrix[recombinaison_individu].ancetre].descendant_2;
+                anc_ind_recomb_anc = individus_matrix[individu_selectioned].ancetre;
+            }
+
+            int anc_anc_recombinaison_desc_1, anc_anc_recombinaison_desc_2;
+            //int anc_select_recomb_desc_1, anc_select_recomb_desc_2;
+
+            if (individus_matrix[individus_matrix[individu_selectioned].ancetre].descendant_2 == individu_selectioned)
+            {
+                //on modifie le descendant 2
+                printf("on parle de l'individu %d\n",individus_matrix[individu_selectioned].ancetre);
+                printf("l'individu de recombinaison est %d\n",recombinaison_individu );
+                printf("l'individu de selection est %d\n",individu_selectioned );
+                printf("Dans le 2eme cas A\n");
+                if (individus_matrix[individus_matrix[recombinaison_individu].ancetre].descendant_1 == recombinaison_individu)
+                {
+                    printf("A.1\n");
+                    if (individus_matrix[individus_matrix[individu_selectioned].ancetre].descendant_1 == individu_selectioned)
+                    {
+                        //si la section est sur le 1 on modifie la 1
+                        //le descendant 1 (de l'ancetre de lindiviud selec)
+                        //est donc egale a l'ancetre de la recombinaire
+                        anc_anc_recombinaison_desc_1= 
+                        individus_matrix[recombinaison_individu].ancetre;
+                        printf("descendant_1 %d\n",anc_anc_recombinaison_desc_1);
+
+                    }else{
+                        //c'est sur l'individu 2
+                        anc_anc_recombinaison_desc_2= 
+                        individus_matrix[recombinaison_individu].ancetre;
+                        printf("descendant_2 %d\n",anc_anc_recombinaison_desc_2);
+                    }
+                    /*                    anc_anc_recombinaison_desc_2 = 
+                    individus_matrix[individus_matrix[individu_selectioned].ancetre].descendant_2;
+                    printf("descendant_1 : %d\n",anc_anc_recombinaison_desc_1);
+                    */
+                }
+                if (individus_matrix[individus_matrix[recombinaison_individu].ancetre].descendant_2 == recombinaison_individu)
+                {
+                    printf("A.2\n");
+                    if (individus_matrix[individus_matrix[individu_selectioned].ancetre].descendant_1 == individu_selectioned)
+                    {
+                        //si la section est sur le 1 on modifie la 1
+                        //le descendant 1 (de l'ancetre de lindiviud selec)
+                        //est donc egale a l'ancetre de la recombinaire
+                        anc_anc_recombinaison_desc_1 = 
+                        individus_matrix[recombinaison_individu].ancetre;
+                        printf("descendant_1 %d\n", anc_anc_recombinaison_desc_1);  
+
+                    }else{
+                        //c'est sur l'individu 2
+                        anc_anc_recombinaison_desc_2= 
+                        individus_matrix[recombinaison_individu].ancetre;
+                        printf("descendant_2 %d\n", anc_anc_recombinaison_desc_2); 
+                    }
+                    /*
+                    anc_anc_recombinaison_desc_1 = 
+                    individus_matrix[individus_matrix[individu_selectioned].ancetre].descendant_1;
+                    printf("descendant_1 %d\n",anc_anc_recombinaison_desc_1);
+                    */
+                }
+                printf("mais faut aussi changer le descendant 2 dans le cas A\n");
+                if (individus_matrix[individus_matrix[recombinaison_individu].ancetre].descendant_1 == recombinaison_individu)
+                {
+                    printf("A.3\n");
+                    // depend du référentiel soit individu_selectioned soit recombinaison_individu
+                    if (individus_matrix[individus_matrix[individu_selectioned].ancetre].descendant_2 == individu_selectioned)
+                    {
+                        //si la section est sur le 1 on modifie la 1
+                        //le descendant 1 (de l'ancetre de lindiviud selec)
+                        //est donc egale a l'ancetre de la recombinaire
+                        anc_anc_recombinaison_desc_1 = 
+                        individus_matrix[individus_matrix[individu_selectioned].ancetre].descendant_1;
+                        printf("descendant_1 %d\n", anc_anc_recombinaison_desc_1);  
+
+                    }else{
+                        //c'est sur l'individu 2
+                        anc_anc_recombinaison_desc_2 = 
+                        individus_matrix[individus_matrix[individu_selectioned].ancetre].descendant_2;
+                        printf("descendant_1 %d\n", anc_anc_recombinaison_desc_2);  
+                    }
+                    /*
+                    anc_anc_recombinaison_desc_2 = 
+                    individus_matrix[individus_matrix[individu_selectioned].ancetre].descendant_1;
+                    printf("descendant_2 %d\n",anc_anc_recombinaison_desc_2);
+                    */
+                }
+                if (individus_matrix[individus_matrix[recombinaison_individu].ancetre].descendant_2 == recombinaison_individu)
+                {
+                    printf("A.4\n");
+                    if (individus_matrix[individus_matrix[individu_selectioned].ancetre].descendant_2 == individu_selectioned)
+                    {
+                        //si la section est sur le 1 on modifie la 1
+                        //le descendant 1 (de l'ancetre de lindiviud selec)
+                        //est donc egale a l'ancetre de la recombinaire
+                        anc_anc_recombinaison_desc_1 = 
+                        individus_matrix[individus_matrix[individu_selectioned].ancetre].descendant_1;
+                        printf("descendant_1 %d\n", anc_anc_recombinaison_desc_1);  
+
+                    }else{
+                        //c'est sur l'individu 2
+                        anc_anc_recombinaison_desc_2 = 
+                        individus_matrix[individus_matrix[individu_selectioned].ancetre].descendant_2;
+                        printf("descendant_1 %d\n", anc_anc_recombinaison_desc_2);  
+                    }
+                    /*
+                    anc_anc_recombinaison_desc_2 = 
+                    individus_matrix[individus_matrix[individu_selectioned].ancetre].descendant_2;
+                    printf("descendant_2 %d\n",anc_anc_recombinaison_desc_2);
+                    */
+                }
+
+            }
+            if (individus_matrix[individus_matrix[individu_selectioned].ancetre].descendant_1 == individu_selectioned)
+            {
+                //on modifie le descendant 1
+                printf("on parle de l'individu %d\n",individus_matrix[individu_selectioned].ancetre);
+                printf("l'individu de recombinaison est %d\n",recombinaison_individu );
+                printf("l'individu de selection est %d\n",individu_selectioned );
+                printf("Dans le 2eme cas B\n");
+                if (individus_matrix[individus_matrix[recombinaison_individu].ancetre].descendant_1 == recombinaison_individu)
+                {
+                    printf("B.1 on modifie \n");
+                    if (individus_matrix[individus_matrix[individu_selectioned].ancetre].descendant_1 == individu_selectioned)
+                    {
+                        //si la section est sur le 1 on modifie la 1
+                        //le descendant 1 (de l'ancetre de lindiviud selec)
+                        //est donc egale a l'ancetre de la recombinaire
+                        anc_anc_recombinaison_desc_1= 
+                        individus_matrix[recombinaison_individu].ancetre;
+                        printf("descendant_1 %d\n", anc_anc_recombinaison_desc_1); 
+                    }else{
+                        //c'est sur l'individu 2
+                        anc_anc_recombinaison_desc_2= 
+                        individus_matrix[recombinaison_individu].ancetre;
+                        printf("descendant_2 %d\n", anc_anc_recombinaison_desc_1); 
+                    }
+                }
+                if (individus_matrix[individus_matrix[recombinaison_individu].ancetre].descendant_2 == recombinaison_individu)
+                {
+                    printf("B.2\n");
+                    if (individus_matrix[individus_matrix[individu_selectioned].ancetre].descendant_1 == individu_selectioned)
+                    {
+                        //si la section est sur le 1 on modifie la 1
+                        //le descendant 1 (de l'ancetre de lindiviud selec)
+                        //est donc egale a l'ancetre de la recombinaire
+                        anc_anc_recombinaison_desc_1= 
+                        individus_matrix[recombinaison_individu].ancetre;
+                        printf("descendant_1 %d\n", anc_anc_recombinaison_desc_1); 
+
+                    }else{
+                        //c'est sur l'individu 2
+                        anc_anc_recombinaison_desc_2= 
+                        individus_matrix[recombinaison_individu].ancetre;
+                        printf("descendant_2 %d\n", anc_anc_recombinaison_desc_1); 
+                    }
+                }
+                //mais faut aussi modifier le descendant 2 e l'ancetre de l'individu selectionné
+                printf("mais faut aussi changer le descendant 2 dans le cas B\n");
+                if (individus_matrix[individus_matrix[recombinaison_individu].ancetre].descendant_1 == recombinaison_individu)
+                {
+
+                    int referentiel;
+                        if (individus_matrix[individus_matrix[recombinaison_individu].ancetre].descendant_1 == 
+                            individus_matrix[individu_selectioned].ancetre ||
+                            individus_matrix[individus_matrix[recombinaison_individu].ancetre].descendant_2 == 
+                            individus_matrix[individu_selectioned].ancetre)
+                        {
+                            referentiel = individu_selectioned;
+                            printf("référentiel individu selectionned\n");
+
+                        }else{
+                            referentiel = recombinaison_individu;
+                            printf("référentiel recombinaison individu\n");
+                        }
+
+                    printf("B.3\n");
+                    if (individus_matrix[individus_matrix[recombinaison_individu].ancetre].descendant_1 == recombinaison_individu)
+                    {
+                        //si la section est sur le 1 on modifie la 1
+                        //le descendant 1 (de l'ancetre de lindiviud selec)
+                        //est donc egale a l'ancetre de la recombinaire
+                        //le reférentiel 
+                        anc_anc_recombinaison_desc_2 = 
+                        individus_matrix[individus_matrix[referentiel].ancetre].descendant_2;
+                        printf("B.3.1 descendant_2 %d\n",anc_anc_recombinaison_desc_2);
+
+                    }else{
+                        //c'est sur l'individu 2
+                        //c'est sur l'individu 2
+                        anc_anc_recombinaison_desc_2 = 
+                        individus_matrix[individus_matrix[referentiel].ancetre].descendant_1;
+                        printf("B.3.2 descendant_2 %d\n",anc_anc_recombinaison_desc_2);
+                    }
+                    /*
+                    anc_anc_recombinaison_desc_2 = 
+                    individus_matrix[individus_matrix[recombinaison_individu].ancetre].descendant_2;
+                    printf("descendant_2 %d\n",anc_anc_recombinaison_desc_2);
+                    */
+                }
+                if (individus_matrix[individus_matrix[recombinaison_individu].ancetre].descendant_2 == recombinaison_individu)
+                {
+                    int referentiel;
+                        if (individus_matrix[individus_matrix[recombinaison_individu].ancetre].descendant_1 == 
+                            individus_matrix[individu_selectioned].ancetre ||
+                            individus_matrix[individus_matrix[recombinaison_individu].ancetre].descendant_2 == 
+                            individus_matrix[individu_selectioned].ancetre)
+                        {
+                            referentiel = individu_selectioned;
+                            printf("référentiel individu selectionned\n");
+                        }else{
+                            
+                            referentiel = recombinaison_individu;
+                            printf("référentiel recombinaison individu\n");
+                        }
+                    printf("B.4\n");
+                    if (individus_matrix[individus_matrix[recombinaison_individu].ancetre].descendant_1 == recombinaison_individu)
+                    {
+                        //si la section est sur le 1 on modifie la 1
+                        //le descendant 1 (de l'ancetre de lindiviud selec)
+                        //est donc egale a l'ancetre de la recombinaire
+                        anc_anc_recombinaison_desc_2 = 
+                        individus_matrix[individus_matrix[referentiel].ancetre].descendant_2;
+                        printf("B.4.1 descendant_2 %d\n",anc_anc_recombinaison_desc_2);
+
+                    }else{
+                        //c'est sur l'individu 2
+                        anc_anc_recombinaison_desc_2 = 
+                        individus_matrix[individus_matrix[referentiel].ancetre].descendant_1;
+                        printf("B.4.2 descendant_2 %d\n",anc_anc_recombinaison_desc_2);
+                    }
+                    /*
+                    anc_anc_recombinaison_desc_2 = 
+                    individus_matrix[individus_matrix[recombinaison_individu].ancetre].descendant_2;
+                    printf("descendant_2 %d\n",anc_anc_recombinaison_desc_2);
+                    */
+                }
+
             }
 
 
+            
+
+            int ancetre_de_machin;
+            if (individus_matrix[individus_matrix[recombinaison_individu].ancetre].descendant_1 == 
+                individus_matrix[individu_selectioned].ancetre ||
+                individus_matrix[individus_matrix[recombinaison_individu].ancetre].descendant_2 == 
+                individus_matrix[individu_selectioned].ancetre )
+            {
+                ancetre_de_machin = individus_matrix[individus_matrix[recombinaison_individu].ancetre].ancetre;
+            }else{
+                printf("l'ancetre de l'ancetre de l'individu selectioné ?\n");
+                 ancetre_de_machin = individus_matrix[individus_matrix[individu_selectioned].ancetre].ancetre;
+                 printf("l'individu recombinaison %d\n",recombinaison_individu);
+                 printf("individus_matrix[individus_matrix[recombinaison_individu].ancetre].ancetre = %d\n",
+                 individus_matrix[individus_matrix[recombinaison_individu].ancetre].ancetre );
+                if (individus_matrix[individus_matrix[recombinaison_individu].ancetre].ancetre == -1)
+                {
+                    printf("c'est -1 l'ancetre?\n");
+                    ancetre_de_machin = -1;                          
+                }else{
+                 individus_matrix[individus_matrix[individu_selectioned].ancetre].ancetre = 
+                 ancetre_de_machin;
+
+                 printf("pour l'individu %d on a l'ancetre %d\n",individus_matrix[recombinaison_individu].ancetre,
+                                                                ancetre_de_machin);
+             }
+            }
+            printf("ancetre machin après %d\n",ancetre_de_machin);
+                        //partie modification des variables
+            //pour l'individu selectionné
+            //pour l'individu de recombinaison
+            individus_matrix[individus_matrix[recombinaison_individu].ancetre].descendant_1 = anc_ind_recomb_desc_1;
+            individus_matrix[individus_matrix[recombinaison_individu].ancetre].descendant_2 = anc_ind_recomb_desc_2;
+            individus_matrix[individus_matrix[recombinaison_individu].ancetre].ancetre = anc_ind_recomb_anc;
+            //on modifie l'ancetre de l'ancetre et ces descendant
+            /*
+            individus_matrix[individus_matrix[recombinaison_individu].ancetre].descendant_1 = anc_anc_recombinaison_desc_1;
+            individus_matrix[individus_matrix[recombinaison_individu].ancetre].descendant_2 = anc_anc_recombinaison_desc_2;
+            */
+
+            //on modifie l'ancetre de la selection
+            individus_matrix[individus_matrix[individu_selectioned].ancetre].descendant_1 = anc_anc_recombinaison_desc_1;
+            individus_matrix[individus_matrix[individu_selectioned].ancetre].descendant_2 = anc_anc_recombinaison_desc_2;
+
+            individus_matrix[individus_matrix[individu_selectioned].ancetre].ancetre = ancetre_de_machin;
+            
+            individus_matrix[individu_selectioned].ancetre = ind_select_anc;
+            individus_matrix[individu_selectioned].descendant_1 = ind_select_desc_1;
+            individus_matrix[individu_selectioned].descendant_2 = ind_select_desc_2;
+                
+            printf("--------------------------------------------------------------\n");
+            get_all_informations(individus_matrix, 0, nombre_individu_total);
         }
     }else{
         printf("On ne change rien car la coalescence se situe sur la meme branche.\n");
+        compteur_cache++;
     }
+    
 
     //creation d'un nouveau file newick
     char *strtree2 = (char *)malloc(1000*(sizeof(char)));
     //faire une copy de pointeur
-    char *name_file2 = strcat(argv[2], "_after_coalescence");
+    char name_file2[17] = "after_coalescence";
     int position2 = 0;
     FILE fptr2; 
 
@@ -284,6 +607,7 @@ int main(int argc, char *argv[])
     strtree = PrintTree(0, individus_matrix, strtree2, &position2, nombre_individu);
     create_newick_file(&fptr2, name_file2, strtree2);
     
+
     free(strtree);
     free(strtree2);
     free(individu_concerned_by_coalescence);
