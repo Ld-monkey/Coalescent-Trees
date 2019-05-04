@@ -8,7 +8,6 @@
 //tire aléatoirement un entier dans un interval donné
 int 
 random_position(int a, int b){
-  srand(time(NULL));  
   return rand()%(b-a)+a;
 }
 

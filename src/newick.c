@@ -6,6 +6,7 @@
 #include "matrice_arbre.h"
 #include "newick.h"
 
+
 // regarde si la chaine de caractère a bien été chargé et qu'elle n'est pas vide
 static void is_charNull(char *str)
 {
@@ -27,14 +28,23 @@ static void is_fileNull(FILE *file)
 }
 
 //ajoute la chaine de charactère dans un fichier avec un nom sous format newick .nwk
-void create_newick_file(FILE *file, char *name, char *c)
+void create_newick_file(FILE *file, char *name, char *c, int i)
 {
+    char before_change[1000];
+    char indice[1000];
+    strcpy(before_change, name);
+    sprintf(indice, "%d", i);
+    strcat(name, "_");
+    strcat(name, indice);
 	strcat(name,".nwk");
-  strcat(c, ";");
+    strcat(c, ";");
 	file = fopen(name,"w+");
 	is_fileNull(file);
 	fputs(c,file);
 	fclose(file);
+    strcpy(name, before_change);
+    printf("%s\n",before_change);
+    printf("%s\n",indice);
 }
 
 // Fonction qui returne une chaine de caractère correspondant au format newick
@@ -67,7 +77,6 @@ char* PrintTree(int indiv, Matrice_arbre *matrix, char *strtree, int *position, 
             exit(EXIT_FAILURE);
         }
     }
-    
     if ( matrix[indiv].descendant_1 == -1 )
     {
         sprintf( strtree + (*position), "%d", indiv);

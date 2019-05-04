@@ -57,9 +57,9 @@ void get_all_informations(Matrice_arbre *matrix, int nombre_individu, int nombre
     printf(",d_2: %d ",matrix[i].descendant_2);
     printf(",Anc: %d ",matrix[i].ancetre);
     //printf("T%d : %g ",i,matrix[i].Ti);
-    printf(",l_b : %g \n",matrix[i].longueur_branche);
+    printf(",l_b : %g ",matrix[i].longueur_branche);
     //printf("s_lb : %f ",matrix[i].somme_lb);
-    //printf(",Tps : %g\n",matrix[i].Temps);
+    printf(",Tps : %g\n",matrix[i].Temps);
   }
 }
   
