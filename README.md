@@ -92,7 +92,7 @@ Lorsque la valeur "-1" est renvoyée cela correpond a une valeur NULL c'est à d
 
 ##### Visualisation du fichier de sortie
 
-![alt text](namefile.png "Example_newick_file")
+![namefile](https://user-images.githubusercontent.com/39624027/57196800-ae1a1800-6f60-11e9-97a2-d20af9a77371.png)
 
 Visualisation du résultat à l'aide du logiciel FigTree.
 
