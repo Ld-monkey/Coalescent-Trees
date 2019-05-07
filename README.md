@@ -2,26 +2,33 @@
 
 ## Principe :
 
-Le programme "coalescent trees" écrit en C est un petit programme qui génère aléatoirement un arbre phylogénétique. Plusieurs paramètres permettent de varier son application comme le nombre d'indivu ou la simulation du phénomène de recombinaison.
+Le programme "coalescent trees" est un programme écrit en C qui s'appuie sur la théorie de la coalescence avec recombinaison pour générer de manièrer stochastique des arbres phylogénétiques.
 
 ## Installation :
 
-Aller dans le répertoire ou se trouve le programme et taper dans l'invite de commande :
+Aller dans le répertoire ou se trouve le programme "coalescent_trees" et taper dans l'invite de commande ou le terminal :
 
 * sous (Debian/Ubuntu):
 ```bash 
 make
 ```
-Si le programme n'est pas exécutable :
 
+Si le programme n'est pas exécutable :
 * sous (Debian/Ubuntu):
 ```bash
 chmod +x coalescent_trees
 ```
 
-#### Il aura pour arborescence :
+De même pour rendre le fichier Bash éxecutable :
+* sous (Debian/Ubuntu):
+```bash
+chmod +x run_coalescence.sh
+```
+
+#### L'arborescence du programme:
 
 ```bash 
+.
 ├── coalescent_trees
 ├── inc
 │   ├── errors.h
@@ -31,8 +38,8 @@ chmod +x coalescent_trees
 │   ├── random.h
 │   └── tableau.h
 ├── Makefile
-├── namefile.png
 ├── README.md
+├── run_coalescence.sh
 └── src
     ├── errors.c
     ├── events.c
@@ -41,24 +48,43 @@ chmod +x coalescent_trees
     ├── newick.c
     ├── random.c
     └── tableau.c
-
 ```
 
-## Utilisation :
+# Utilisation :
+## 2 approches sont possibles :
+### L'approche avec le fichier Bash "run_coalescence.sh"
+La mise a disposition du fichier Bash facilite l'utilisation du programme en créant en autre le ou les dossiers a l'interieur desquels sont mis les résultats obtenus.
 
+L'utilisation du fichier Bash est la suivante :
+```sh
+./run_coalescence.sh -ind <interger> -name <namefile> -size <size_of_sample> -folder <name_of_folder>
+```
+#### paramètres :
+
+* __-ind__ :
+Nombre d'individu.
+* __-name__ :
+Nom du fichier qui sera mis sous format .nwk ou newick par défaut et suivi par _before_coalescence_ ou _after_coalescence_. Par défaut le nom est "newick".
+
+* __-size__ :
+Taille de l'échantillon par défaut il est a 1.
+
+* __-folder__ :
+Nom du dossier qui contient les arbres phylogénétiques sous format newick. Par défaut le nom du dossier est "output".
+
+Exemple sous terminal (Debian/Ubuntu):
+```sh
+./run_coalescence.sh -ind 5 -name newick -size 10 -folder output
+```
+L'exemple ci-dessus montre qu'il y a 5 individus dans mes arbres phylogénétiques avec un nom de sortie qui est "newick" et qui nomera les fichiers de la façon suivante : "newick_before_coalescence_0.nwk" et "newick_after_coalescence_0.nwk" et avec une taille d'échantillon de 10 et un dossier sous le nom de "output" qui contient nos résultats.
+
+### L'approche sans le fichier Bash 
 
 L'utilisation est la suivante :
 
 ```sh
-./coalescent_trees <interger> <namefile>
+./coalescent_trees <interger> <namefile> <size_of_sample>
 ```
-
-Example sous (Dedian/Ubuntu) :
-
-```sh
-./coalescent_trees 10 namefile
-```
-La commande suivante a généré un arbre phylogénétique comportant 10 individus selectionnés de manière aléatoire et un fichier de sortie "newick" (.nwk) qui nous permettra de visualiser le résultat.
 
 #### paramètres :
 
@@ -67,12 +93,30 @@ Ce paramètre correspond au nombre d'individu choisi et il peut être très gran
 
 * __namefile__ : Ce paramètre indique le répertoire (ici c'est output par défaut) ainsi que le nom du fichier de sortie.
 
+* __size-of-sample__ :
+Taille de l'échantillon par défaut il est a 1. 
+
+Example sous (Dedian/Ubuntu) :
+
+```sh
+./coalescent_trees 5 newick 10
+```
+La commande suivante a généré des arbres phylogénétiques comportant 5 individus selectionnés de manière aléatoire une taille d'échantillon de 10 et des fichier de sortie "newick" (.nwk) qui nous permet de visualiser le résultat.
+
 ## Resultats :
 
-Les résultats s'affichent de la manière suivante :
+##### Les sorties sous format newick ou .nwk
 
-##### Exemples pour 5 individus:
+![newick_before_coalescence_0 nwk](https://user-images.githubusercontent.com/39624027/57314481-fd438280-70f1-11e9-8626-d0e884081d29.jpg)
 
+![newick_after_coalescence_0 nwk](https://user-images.githubusercontent.com/39624027/57314500-09c7db00-70f2-11e9-91fe-11c67e76c764.jpg)
+
+Exemple de résultats obtenus. On peut observer l'avant et l'après d'un évènement de recombinaison pour un arbre reconstituer aléatoirement.
+
+La visualisation des arbres grâce au logiciel [FigTree.](http://tree.bio.ed.ac.uk/software/figtree/)
+
+
+##### Les sorties sous forme d'un tableau dans le terminal:
 
 
 |individu : | 1er descendant : | 2nd descendant : | Ancêtre : | Ti :     | longueur branche   : | Temps    :|
@@ -89,12 +133,6 @@ Les résultats s'affichent de la manière suivante :
 
 
 Lorsque la valeur "-1" est renvoyée cela correpond a une valeur NULL c'est à dire qu'elle ne renvoie aucun paramètres illustrés ci-dessus.
-
-##### Visualisation du fichier de sortie
-
-![namefile](https://user-images.githubusercontent.com/39624027/57196800-ae1a1800-6f60-11e9-97a2-d20af9a77371.png)
-
-Visualisation du résultat à l'aide du logiciel FigTree.
 
 ## Erreurs :
 
