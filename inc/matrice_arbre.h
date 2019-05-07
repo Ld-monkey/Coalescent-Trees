@@ -24,4 +24,7 @@ extern void create_phylogenetic_tree(Matrice_arbre *matrix, int *array, int arra
 extern float get_somme_branches(Matrice_arbre *matrix, int last_individu);
 extern int get_last_individu(Matrice_arbre *matrix, int individu);
 
+extern void get_descendants(Matrice_arbre *matrix, int individu, int *array);
+extern int get_total_terminal_node(Matrice_arbre *matrix, int individu);
+
 #endif /*MATRICE_ARBRE*/

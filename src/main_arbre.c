@@ -16,13 +16,12 @@ int main(int argc, char *argv[])
     get_null_argv(argc, argv);
   }else
   {
-    srand(time(NULL));
-
-    /*
     int compteur_cache = 0;
     int compteur_silencieux = 0;
     int compteur_non_silencieux = 0;
-    */
+
+    srand(time(NULL));
+    
     int nbre_echantillon;
     if (argv[3] == NULL)
     {
@@ -35,7 +34,7 @@ int main(int argc, char *argv[])
     }
 
     char *name_file = argv[2];
-    char name_file2[50];
+    char name_file2[100];
     strcpy(name_file2, name_file);
     strcat(name_file, "_before_coalescence");
     strcat(name_file2, "_after_coalescence");
@@ -54,11 +53,9 @@ int main(int argc, char *argv[])
     /* variables nécessaires a la création du fichier newick*/
     char *strtree = (char *)malloc(1000*(sizeof(char)));
 
-
     int position = 0;
     FILE fptr;
     
-
     readme_information();
     initiate_table(individus_table, nombre_individu);
     initiate_matrix(individus_matrix, nombre_individu_total);
@@ -125,9 +122,8 @@ int main(int argc, char *argv[])
     individu_selectioned = get_random_int_table(individu_concerned_by_coalescence, length_table);
     printf("L'individu selectionné au hazard dans le tableau est %d.\n",individu_selectioned);
     free(individu_concerned_by_coalescence);
-    //printf("main : last_individu = %d\n",last_individu);
 
-    individus_matrix[nombre_individu_total] = coalescent_event(individus_matrix, individu_selectioned, recombinaison_individu, event_coalescent, last_individu);
+    individus_matrix[nombre_individu_total] = coalescent_event(individus_matrix, individu_selectioned, recombinaison_individu, event_coalescent, last_individu, &compteur_cache, &compteur_silencieux, &compteur_non_silencieux);
     
     printf("Deuxième get_all_informations\n");
     get_all_informations(individus_matrix, 0, nombre_individu_total);
@@ -140,9 +136,22 @@ int main(int argc, char *argv[])
     //chaine de caractère recupere la typologie du format newick puis creation d'un fichier newick .nwk
     strtree = PrintTree(0, individus_matrix, strtree2, &position2, nombre_individu);
     create_newick_file(&fptr2, name_file2, strtree2, i);
+
+    //on teste qui sont les descendants d'un individu donné
+    int *tableau_descendant = malloc(nombre_individu*(sizeof(int)));
+    tableau_descendant = calloc(nombre_individu, sizeof(int));
+    //exemple avec les descendant de l'individu 8
+    get_descendants(individus_matrix, 8, tableau_descendant);
+    //affiche le tableau 
+    diplay_table(tableau_descendant, nombre_individu);
+    
+    //recupère le nombre de noeud terminal avec la fonction : get_total_terminal_node.
+    int total_terminal_node = get_total_terminal_node(individus_matrix, 8);
+    printf("Pour l'individu %d le nombre total de feuille = %d\n", 8, total_terminal_node);
+
     free(strtree2);
     }
-    //printf("cache : %d, silencieux : %d, non_silencieux: %d\n", compteur_cache, compteur_silencieux, compteur_non_silencieux);
+    printf("cache : %d, silencieux : %d, non_silencieux: %d\n", compteur_cache, compteur_silencieux, compteur_non_silencieux);
   }
     return(EXIT_SUCCESS);
 }

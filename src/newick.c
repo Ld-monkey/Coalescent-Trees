@@ -30,8 +30,8 @@ static void is_fileNull(FILE *file)
 //ajoute la chaine de charactère dans un fichier avec un nom sous format newick .nwk
 void create_newick_file(FILE *file, char *name, char *c, int i)
 {
-    char before_change[1000];
-    char indice[1000];
+    char before_change[10001];
+    char indice[10001];
     strcpy(before_change, name);
     sprintf(indice, "%d", i);
     strcat(name, "_");

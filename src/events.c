@@ -201,7 +201,7 @@ static void my_pause(void)
    getchar();
 }
 
-Matrice_arbre coalescent_event(Matrice_arbre *matrix, int individu_selectioned, int recombinaison_individu, float event_coalescent, int last_individu)
+Matrice_arbre coalescent_event(Matrice_arbre *matrix, int individu_selectioned, int recombinaison_individu, float event_coalescent, int last_individu, int *compteur_cache, int *compteur_silencieux, int *compteur_non_silencieux)
 {
   if (individu_selectioned != recombinaison_individu)
     {
@@ -209,9 +209,7 @@ Matrice_arbre coalescent_event(Matrice_arbre *matrix, int individu_selectioned, 
         //dans le cas rare ou l'évènement de coalescence se situe au dessus du dernier temps
         if (event_coalescent > matrix[last_individu].Temps )
         {
-            //compteur_silencieux++;
-
-            //faire attention a la somme des descendant
+            (*compteur_silencieux)++;            //faire attention a la somme des descendant
             if (matrix[matrix[last_individu].descendant_1].descendant_1 == -1 &&
                 matrix[matrix[last_individu].descendant_1].descendant_2 == -1)
             {
@@ -268,8 +266,7 @@ Matrice_arbre coalescent_event(Matrice_arbre *matrix, int individu_selectioned, 
         //le cas ou ils ont le même ancêtre 
         else if (matrix[individu_selectioned].ancetre == matrix[recombinaison_individu].ancetre)
         {
-            //compteur_silencieux++;
-
+            (*compteur_silencieux)++;
             printf("On a les même ancêtres\n");
             int i = matrix[individu_selectioned].ancetre;
             float total_lb_ancetre_commun = 0.0;
@@ -294,8 +291,7 @@ Matrice_arbre coalescent_event(Matrice_arbre *matrix, int individu_selectioned, 
         else if (recombinaison_individu == matrix[individu_selectioned].descendant_1
             || recombinaison_individu == matrix[individu_selectioned].descendant_2)
         {
-            //compteur_silencieux++;
-
+            (*compteur_silencieux)++;
             printf("Cas particulier : L'ancetre de l'individu de recombinaison est un descendant de l'évènement de recombinaison.\n");
             int i = matrix[individu_selectioned].descendant_1;
             float somme_total = matrix[matrix[individu_selectioned].descendant_1].longueur_branche;
@@ -326,7 +322,7 @@ Matrice_arbre coalescent_event(Matrice_arbre *matrix, int individu_selectioned, 
         //le cas ou ils n'ont pas le même ancêtre
         else if(matrix[individu_selectioned].ancetre != matrix[recombinaison_individu].ancetre)
         {
-            //compteur_non_silencieux++;
+            (*compteur_non_silencieux)++;
 
             printf("--------------------------------------------------------------\n");
             
@@ -338,6 +334,38 @@ Matrice_arbre coalescent_event(Matrice_arbre *matrix, int individu_selectioned, 
             if (matrix[individu_selectioned].descendant_1 == matrix[recombinaison_individu].ancetre
                 || matrix[individu_selectioned].descendant_2 == matrix[recombinaison_individu].ancetre){
 
+                if (matrix[recombinaison_individu].ancetre == matrix[individu_selectioned].descendant_1)
+                {
+                  printf("probleme ? B\n");
+                  printf("------------------------------------------------\n");
+                  if (matrix[matrix[recombinaison_individu].ancetre].descendant_2 == recombinaison_individu)
+                  {
+                    ind_select_desc_1 = matrix[matrix[recombinaison_individu].ancetre].descendant_1;
+                    printf("B.1 ind_select_desc_1 : %d\n",ind_select_desc_1);
+                  }
+                  if (matrix[matrix[recombinaison_individu].ancetre].descendant_1 == recombinaison_individu)
+                  {
+                    ind_select_desc_1 = matrix[matrix[recombinaison_individu].ancetre].descendant_2;
+                    printf("B.2 ind_select_desc_1 : %d\n",ind_select_desc_1);
+                  }
+
+                  anc_ind_recomb_anc = matrix[individu_selectioned].ancetre;
+                  ind_select_anc = matrix[recombinaison_individu].ancetre;
+                  printf("ind_select_anc : %d\n",ind_select_anc);
+                  matrix[matrix[recombinaison_individu].ancetre].descendant_2 = individu_selectioned;
+                   
+                //my_pause();
+                  printf("matrix[individu_selectioned].ancetre %d -> %d ind_select_anc\n",matrix[individu_selectioned].ancetre,ind_select_anc);
+                  matrix[individu_selectioned].ancetre = ind_select_anc;
+                  printf("matrix[individu_selectioned].descendant_1 %d -> %d ind_select_desc_1\n",matrix[individu_selectioned].descendant_1,ind_select_desc_1);
+                  matrix[individu_selectioned].descendant_1 = ind_select_desc_1;
+                  printf("matrix[matrix[recombinaison_individu].ancetre].ancetre %d -> %d anc_ind_recomb_anc\n",matrix[matrix[recombinaison_individu].ancetre].ancetre,anc_ind_recomb_anc);
+                  matrix[matrix[recombinaison_individu].ancetre].ancetre = anc_ind_recomb_anc;
+                  printf("fin\n");
+                  return *matrix;
+
+                }
+                
                 if (matrix[recombinaison_individu].ancetre == matrix[individu_selectioned].descendant_2)
                 {
                   /*
@@ -359,7 +387,7 @@ Matrice_arbre coalescent_event(Matrice_arbre *matrix, int individu_selectioned, 
                     printf("A.2 ind_select_desc_2 : %d\n",ind_select_desc_2);
                   }
 
-                  anc_ind_recomb_anc = -1;
+                  anc_ind_recomb_anc = matrix[individu_selectioned].ancetre;
                   ind_select_anc = matrix[recombinaison_individu].ancetre;
                   printf("ind_select_anc : %d\n",ind_select_anc);
                   matrix[matrix[recombinaison_individu].ancetre].descendant_1 = individu_selectioned;
@@ -373,40 +401,7 @@ Matrice_arbre coalescent_event(Matrice_arbre *matrix, int individu_selectioned, 
                   matrix[matrix[recombinaison_individu].ancetre].ancetre = anc_ind_recomb_anc;
                   printf("fin\n");
                   return *matrix;
-                }
-
-                if (matrix[recombinaison_individu].ancetre == matrix[individu_selectioned].descendant_1)
-                {
-                  printf("probleme ? B\n");
-                  printf("------------------------------------------------\n");
-                  if (matrix[matrix[recombinaison_individu].ancetre].descendant_2 == recombinaison_individu)
-                  {
-                    ind_select_desc_1 = matrix[matrix[recombinaison_individu].ancetre].descendant_1;
-                    printf("B.1 ind_select_desc_1 : %d\n",ind_select_desc_1);
-                  }
-                  if (matrix[matrix[recombinaison_individu].ancetre].descendant_1 == recombinaison_individu)
-                  {
-                    ind_select_desc_1 = matrix[matrix[recombinaison_individu].ancetre].descendant_2;
-                    printf("B.2 ind_select_desc_1 : %d\n",ind_select_desc_1);
-                  }
-
-                  anc_ind_recomb_anc = -1;
-                  ind_select_anc = matrix[recombinaison_individu].ancetre;
-                  printf("ind_select_anc : %d\n",ind_select_anc);
-                  matrix[matrix[recombinaison_individu].ancetre].descendant_2 = individu_selectioned;
-                   
-                //my_pause();
-                  printf("matrix[individu_selectioned].ancetre %d -> %d ind_select_anc\n",matrix[individu_selectioned].ancetre,ind_select_anc);
-                  matrix[individu_selectioned].ancetre = ind_select_anc;
-                  printf("matrix[individu_selectioned].descendant_1 %d -> %d ind_select_desc_1\n",matrix[individu_selectioned].descendant_1,ind_select_desc_1);
-                  matrix[individu_selectioned].descendant_1 = ind_select_desc_1;
-                  printf("matrix[matrix[recombinaison_individu].ancetre].ancetre %d -> %d anc_ind_recomb_anc\n",matrix[matrix[recombinaison_individu].ancetre].ancetre,anc_ind_recomb_anc);
-                  matrix[matrix[recombinaison_individu].ancetre].ancetre = anc_ind_recomb_anc;
-                  printf("fin\n");
-                  return *matrix;
-
-                }
-            
+                }            
             }
 
             //si lors l'évènement de recombinaison se trouve a plus de 1 de l'individu de selection
@@ -615,7 +610,7 @@ Matrice_arbre coalescent_event(Matrice_arbre *matrix, int individu_selectioned, 
         }
     }else{
         printf("On ne change rien car la coalescence se situe sur la meme branche.\n");
-        //compteur_cache++;
+        (*compteur_cache)++;
         return *matrix;
     }
   return *matrix;

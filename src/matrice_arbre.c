@@ -136,8 +136,54 @@ float get_somme_branches(Matrice_arbre *matrix, int last_individu)
   return result; 
 }
 
-//returne le dernier individu
+//retourne le dernier individu
 int get_last_individu(Matrice_arbre *matrix, int individu)
 {
   return matrix[individu-1].individu;
+}
+ 
+/*retourne sous forme de tableau binaire l'ensemble des descendants
+pour un individu donné. Exemple pour l'individu 5 on a les descendants
+2 et 1 le tableau retourné est : [0 1 1 0 0] */
+void get_descendants(Matrice_arbre *matrix, int individu, int *array)
+{
+  //retrouve la totalité seulement des descendants de fin pour un individu donné
+  if (matrix[individu].descendant_1 == -1 && matrix[individu].Temps == 0)
+  {
+    //ajoute le descendant a la bonne position dans le tableau
+    int i = 0;
+    while(i != individu){
+      i++;
+    }
+    array[i] = 1;
+  }
+  else if (matrix[individu].descendant_2 == -1 && matrix[individu].Temps == 0)
+  {
+    //on fait pareil pour les descedants 2.
+    int i = 0;
+    while(i != individu){
+      i++;
+    }
+    array[i] = 1;
+  }else{
+    //sinon on regarde pour le descendant 1 dans un premier temps
+    get_descendants(matrix, matrix[individu].descendant_1, array);
+    //puis on regarde dans un second temps pour les descendant 2
+    get_descendants(matrix, matrix[individu].descendant_2, array);
+  }
+}
+
+//retourne le nombre (entier) de feuille pour un individu donné
+int get_total_terminal_node(Matrice_arbre *matrix, int individu)
+{
+  static int count = 0;
+  if (matrix[individu].descendant_1 == -1 && matrix[individu].Temps == 0)
+    count++;
+  else if (matrix[individu].descendant_2 == -1 && matrix[individu].Temps == 0)
+    count++;
+  else{
+    get_total_terminal_node(matrix, matrix[individu].descendant_1);
+    get_total_terminal_node(matrix, matrix[individu].descendant_2);
+  }
+  return count;
 }
