@@ -107,9 +107,9 @@ La commande suivante a généré des arbres phylogénétiques comportant 5 indiv
 
 ##### Les sorties sous format newick ou .nwk
 
-<img src="https://user-images.githubusercontent.com/39624027/57314481-fd438280-70f1-11e9-8626-d0e884081d29.jpg"  width="100" height="100"\>
+<img src="https://user-images.githubusercontent.com/39624027/57314481-fd438280-70f1-11e9-8626-d0e884081d29.jpg"  width="100" height="100"/>
 
-<img src="https://user-images.githubusercontent.com/39624027/57314500-09c7db00-70f2-11e9-91fe-11c67e76c764.jpg"  width="100" height="100"\>
+<img src="https://user-images.githubusercontent.com/39624027/57314500-09c7db00-70f2-11e9-91fe-11c67e76c764.jpg"  width="100" height="100"/>
 
 Exemple de résultats obtenus. On peut observer l'avant et l'après d'un évènement de recombinaison pour un arbre reconstitué aléatoirement.
 
