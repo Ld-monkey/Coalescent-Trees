@@ -2,7 +2,7 @@
 
 ## Principe :
 
-Le programme "coalescent trees" est un programme écrit en C qui s'appuie sur la théorie de la coalescence avec recombinaison pour générer de manièrer stochastique des arbres phylogénétiques.
+Le programme "coalescent trees" est un programme écrit en C qui s'appuie sur la théorie de la coalescence avec recombinaison pour générer de manière stochastique des arbres phylogénétiques.
 
 ## Installation :
 

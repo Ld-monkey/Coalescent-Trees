@@ -173,7 +173,7 @@ void get_descendants(Matrice_arbre *matrix, int individu, int *array)
   }
 }
 
-//retourne le nombre (entier) de feuille pour un individu donné
+//retourne le nombre (entier) de feuille pour un individu donné.
 int get_total_terminal_node(Matrice_arbre *matrix, int individu)
 {
   static int count = 0;

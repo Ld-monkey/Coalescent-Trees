@@ -201,7 +201,7 @@ static void my_pause(void)
    getchar();
 }
 
-Matrice_arbre coalescent_event(Matrice_arbre *matrix, int individu_selectioned, int recombinaison_individu, float event_coalescent, int last_individu, int *compteur_cache, int *compteur_silencieux, int *compteur_non_silencieux)
+Matrice_arbre coalescent_event(Matrice_arbre *matrix, int individu_selectioned, int recombinaison_individu, float event_coalescent, float event_recombinaison, int last_individu, int *compteur_cache, int *compteur_silencieux, int *compteur_non_silencieux)
 {
   if (individu_selectioned != recombinaison_individu)
     {
@@ -529,6 +529,8 @@ Matrice_arbre coalescent_event(Matrice_arbre *matrix, int individu_selectioned, 
             //
             int anc_anc_recombinaison_desc_1, anc_anc_recombinaison_desc_2;
             int ancetre_machin;
+            int ancetre_individu_selectionne;
+            int last_individu_second_tableau;
 
             //du point de vue de la recombinaison.desc + anc.anc.recombinaison-> desc
             if (matrix[matrix[recombinaison_individu].ancetre].descendant_1 == recombinaison_individu)
@@ -537,11 +539,105 @@ Matrice_arbre coalescent_event(Matrice_arbre *matrix, int individu_selectioned, 
               anc_ind_recomb_desc_2 = individu_selectioned;
               if (matrix[matrix[recombinaison_individu].ancetre].ancetre == -1)
               {
+                //my_pause();
+                //longueur des branches
+                /* récuper l'évènement de coalescence (sur l'individu de selection)
+                et l'évènement de coalescence (sur l'individu de recombinaison)
+                */
+                int i = recombinaison_individu;
+                float somme_total = matrix[recombinaison_individu].longueur_branche;
+                while (matrix[i].descendant_1 != -1){
+                    i = matrix[i].descendant_1;
+                    somme_total += matrix[i].longueur_branche;
+                }
+
+                int y = matrix[individu_selectioned].descendant_1;
+                float somme_total_descendant = matrix[y].longueur_branche;
+                if (matrix[individu_selectioned].descendant_1 == -1)
+                {
+                  somme_total_descendant = 0;
+                }else{
+                  while (matrix[y].descendant_1 != -1){
+                      y = matrix[y].descendant_1;
+                      somme_total_descendant += matrix[y].longueur_branche;
+                  }
+                }
+
+                int z = matrix[recombinaison_individu].descendant_1;
+                float somme_total_recombinant = matrix[z].longueur_branche;
+                if (matrix[recombinaison_individu].descendant_1 == -1)
+                {
+                  somme_total_recombinant = 0;
+                }else{
+                  while (matrix[z].descendant_1 != -1){
+                      z = matrix[z].descendant_1;
+                      somme_total_recombinant += matrix[z].longueur_branche;
+                  }
+                }
+
+                printf("Temps coalescence (indididu de selection) = %f\n",event_coalescent);
+                printf("Temps recombinaison (indididu de recombinaison_individu) = %f\n",event_recombinaison);
+                //mais avant de passer le descenant a 0 alonger ses descendants mais il faut savoir les quelles
+                if (individu_selectioned == matrix[matrix[individu_selectioned].ancetre].descendant_1)
+                  {
+                    if (matrix[matrix[matrix[individu_selectioned].ancetre].descendant_2].descendant_1 == -1)
+                    {
+                      matrix[matrix[matrix[individu_selectioned].ancetre].descendant_2].longueur_branche +=
+                      matrix[matrix[individu_selectioned].ancetre].longueur_branche;
+                    }else{
+                      matrix[matrix[matrix[individu_selectioned].ancetre].descendant_2].longueur_branche +=
+                      matrix[matrix[individu_selectioned].ancetre].longueur_branche - somme_total_descendant;
+                    }
+                  }
+                if (individu_selectioned == matrix[matrix[individu_selectioned].ancetre].descendant_2)
+                  {
+                    if (matrix[matrix[matrix[individu_selectioned].ancetre].descendant_1].descendant_1 == -1)
+                    {
+                      matrix[matrix[matrix[individu_selectioned].ancetre].descendant_1].longueur_branche +=
+                      matrix[matrix[individu_selectioned].ancetre].longueur_branche;
+                    }else{
+                      matrix[matrix[matrix[individu_selectioned].ancetre].descendant_1].longueur_branche +=
+                      matrix[matrix[individu_selectioned].ancetre].longueur_branche - somme_total_descendant;
+                    }
+                  }
+                //on passe pour le descendant 2 la longueur de 0
+                matrix[matrix[matrix[recombinaison_individu].ancetre].descendant_2].longueur_branche = 0;
+            
+                printf("somme total : %f\n",somme_total);
+                printf("somme total des descendants : %f\n",somme_total_descendant);
+                printf("somme_total_recombinant : %f\n",somme_total_recombinant);
+
+                matrix[matrix[recombinaison_individu].ancetre].longueur_branche +=
+                (somme_total - event_coalescent);
+                matrix[recombinaison_individu].longueur_branche = event_coalescent - somme_total_recombinant;
+                matrix[individu_selectioned].longueur_branche = event_coalescent;
+
+                //echange de variable
+                if (matrix[matrix[recombinaison_individu].ancetre].descendant_2 ==
+                  matrix[individu_selectioned].ancetre)
+                {
+                  printf("COUCOU A\n");
+                  ancetre_machin = -1;
+                }else{
+                  printf("COUCOU B\n");
+                  //my_pause();
+                  //car on sait que l'individu de recombinaison = descendant 1 donc on modifie descendant 2
+                  last_individu_second_tableau = matrix[matrix[recombinaison_individu].ancetre].descendant_2;              
+                  ancetre_individu_selectionne = -1;
+                  ancetre_machin = matrix[matrix[individu_selectioned].ancetre].ancetre;
+                  printf("last_individu_second_tableau = %d\n",last_individu_second_tableau);
+                  printf("ancetre_individu_selectionne = %d\n",ancetre_individu_selectionne);
+                  printf("ancetre_machin = %d\n",ancetre_machin);
+                }
                 anc_ind_recomb_anc = matrix[individu_selectioned].ancetre;
-                ancetre_machin = -1;
               }
               else if (matrix[recombinaison_individu].ancetre == matrix[matrix[matrix[recombinaison_individu].ancetre].ancetre].descendant_2)
               {
+                //longueur des branches
+                matrix[matrix[matrix[recombinaison_individu].ancetre].descendant_2].longueur_branche +=
+                matrix[matrix[recombinaison_individu].ancetre].longueur_branche;
+
+                //echange de variable
                 ancetre_machin = matrix[matrix[individu_selectioned].ancetre].ancetre;
                 anc_ind_recomb_anc = matrix[individu_selectioned].ancetre;
                 matrix[matrix[matrix[recombinaison_individu].ancetre].ancetre].descendant_2 = matrix[matrix[recombinaison_individu].ancetre].descendant_2;
@@ -549,6 +645,11 @@ Matrice_arbre coalescent_event(Matrice_arbre *matrix, int individu_selectioned, 
               // else
               else if (matrix[recombinaison_individu].ancetre == matrix[matrix[matrix[recombinaison_individu].ancetre].ancetre].descendant_1)
               {
+                //longueur des branches
+                matrix[matrix[matrix[recombinaison_individu].ancetre].descendant_2].longueur_branche +=
+                matrix[matrix[recombinaison_individu].ancetre].longueur_branche;
+
+                //echange de variable
                 ancetre_machin = matrix[matrix[individu_selectioned].ancetre].ancetre;
                 anc_ind_recomb_anc = matrix[individu_selectioned].ancetre;
                 matrix[matrix[matrix[recombinaison_individu].ancetre].ancetre].descendant_1 = matrix[matrix[recombinaison_individu].ancetre].descendant_2;
@@ -590,8 +691,10 @@ Matrice_arbre coalescent_event(Matrice_arbre *matrix, int individu_selectioned, 
             }
 
             //dans tout les cas 
-            int ancetre_individu_selectionne;
-            ancetre_individu_selectionne = matrix[recombinaison_individu].ancetre;
+            if (ancetre_individu_selectionne != -1 )
+            {
+              ancetre_individu_selectionne = matrix[recombinaison_individu].ancetre;
+            }
 
             matrix[matrix[recombinaison_individu].ancetre].descendant_1 = anc_ind_recomb_desc_1;
             matrix[matrix[recombinaison_individu].ancetre].descendant_2 = anc_ind_recomb_desc_2;
@@ -601,9 +704,18 @@ Matrice_arbre coalescent_event(Matrice_arbre *matrix, int individu_selectioned, 
             matrix[matrix[individu_selectioned].ancetre].descendant_1 = anc_anc_recombinaison_desc_1;
             matrix[matrix[individu_selectioned].ancetre].descendant_2 = anc_anc_recombinaison_desc_2;
             matrix[matrix[individu_selectioned].ancetre].ancetre = ancetre_machin;
-            matrix[individu_selectioned].ancetre = ancetre_individu_selectionne;
-
-         
+            printf("last_individu_second_tableau = %d\n",last_individu_second_tableau);
+            printf("ancetre_individu_selectionne = %d\n",ancetre_individu_selectionne);
+            printf("ancetre_machin = %d\n",ancetre_machin);
+            if (ancetre_individu_selectionne == -1 )
+            {
+              printf("COUCOU B \n");
+              matrix[last_individu_second_tableau].ancetre = -1;
+            }else{
+              printf("COUCOU C\n");
+              matrix[individu_selectioned].ancetre = ancetre_individu_selectionne;
+            }
+  
             //printf("probleme fin B\n");     
             printf("--------------------------------------------------------------\n");
             return *matrix;

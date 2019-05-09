@@ -123,7 +123,7 @@ int main(int argc, char *argv[])
     printf("L'individu selectionné au hazard dans le tableau est %d.\n",individu_selectioned);
     free(individu_concerned_by_coalescence);
 
-    individus_matrix[nombre_individu_total] = coalescent_event(individus_matrix, individu_selectioned, recombinaison_individu, event_coalescent, last_individu, &compteur_cache, &compteur_silencieux, &compteur_non_silencieux);
+    individus_matrix[nombre_individu_total] = coalescent_event(individus_matrix, individu_selectioned, recombinaison_individu, event_coalescent, real_time_recombinaison, last_individu, &compteur_cache, &compteur_silencieux, &compteur_non_silencieux);
     
     printf("Deuxième get_all_informations\n");
     get_all_informations(individus_matrix, 0, nombre_individu_total);
