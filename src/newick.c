@@ -43,7 +43,7 @@ void create_newick_file(FILE *file, char *name, char *c, int i)
 	fputs(c,file);
 	fclose(file);
     strcpy(name, before_change);
-    printf("%s\n",before_change);
+    //printf("%s\n",before_change);
     printf("%s\n",indice);
 }
 

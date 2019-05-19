@@ -15,3 +15,4 @@ extern void determine(Matrice_arbre *matrix, int *array , int *lenght, int nombr
 extern Matrice_arbre coalescent_event(Matrice_arbre *matrix, int individu_selectioned, int recombinaison_individu, float event_coalescent, float event_recombinaison, int last_individu, int *compteur_cache, int *compteur_silencieux, int *compteur_non_silencieux);
 
 #endif /*EVENTS_H*/
+

@@ -34,3 +34,15 @@
 newick\.nwk
 
 *.nwk
+
+proportion\.dat
+
+3_types_recombinaison\.R
+
+3_types_recombinaison\.sh
+
+proportion\.txt
+
+result\.log
+
+resultats\.txt
