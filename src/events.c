@@ -388,848 +388,417 @@ Matrice_arbre coalescent_event(Matrice_arbre *matrix, int individu_selectioned, 
       else if(matrix[individu_selectioned].ancetre != matrix[recombinaison_individu].ancetre)
         {
           (*compteur_non_silencieux)++;
-          printf("coucou machin truc caca\n");
-          printf("--------------------------------------------------------------\n");
-            
 
-	  int ind_select_desc_1, ind_select_desc_2, ind_select_anc;
-	  int anc_ind_recomb_desc_1, anc_ind_recomb_desc_2, anc_ind_recomb_anc;
-            
-	  //on est dans la situation ou l'évènement de coalescence survient au dessus de lui sans que se soit sont ancetre 
-	  if (matrix[individu_selectioned].descendant_1 == matrix[recombinaison_individu].ancetre
-	      || matrix[individu_selectioned].descendant_2 == matrix[recombinaison_individu].ancetre){
+          /*
+           * On peut généraliser le changement topoplogie d'une recombininaison
+           * non-silencieuse en 3 cas. Il y a lorsque l'individu de selection a
+           * pour ancêtre -1, lorsque l'ancetre de l'ancetre de recombinaison == -1
+           * et l'ancetre de l'ancetre de recombinaison est différent de -1.
+           */
 
-	    if (matrix[recombinaison_individu].ancetre == matrix[individu_selectioned].descendant_1)
-	      {
-		printf("probleme ? B\n");
-		printf("------------------------------------------------\n");
-		if (matrix[matrix[recombinaison_individu].ancetre].descendant_2 == recombinaison_individu)
+          // Prenons le premiers cas lorsque l'individu de selection a pour ancetre -1.
+          if (matrix[individu_selectioned].ancetre == -1)
+          {
+              if (recombinaison_individu == matrix[matrix[recombinaison_individu].ancetre].descendant_1)
+              {
+                  printf("Cas 4.1\n");
+                  // Pour les descendants de l'indvidu de sélection
+                  int descendant_1_individu_selection, descendant_2_individu_selection;
+
+                  // Pour les descendants de l'ancetre de l'individu de recombinaison
+                  int descendant_1_ancetre_recombinaison, descendant_2_ancetre_recombinaison;
+
+                  // Si on est a une distance d'une branche.
+                  if (matrix[recombinaison_individu].ancetre == matrix[individu_selectioned].descendant_1)
                   {
-                    ind_select_desc_1 = matrix[matrix[recombinaison_individu].ancetre].descendant_1;
-                    printf("B.1 ind_select_desc_1 : %d\n",ind_select_desc_1);
+                      descendant_1_individu_selection =
+                              matrix[matrix[recombinaison_individu].ancetre].descendant_2;
+                      descendant_2_individu_selection = matrix[individu_selectioned].descendant_2;
                   }
-		if (matrix[matrix[recombinaison_individu].ancetre].descendant_1 == recombinaison_individu)
+                  else if (matrix[recombinaison_individu].ancetre == matrix[individu_selectioned].descendant_2)
                   {
-                    ind_select_desc_1 = matrix[matrix[recombinaison_individu].ancetre].descendant_2;
-                    printf("B.2 ind_select_desc_1 : %d\n",ind_select_desc_1);
+                      descendant_1_individu_selection = matrix[individu_selectioned].descendant_1;
+                      descendant_2_individu_selection =
+                              matrix[matrix[recombinaison_individu].ancetre].descendant_2;
                   }
-
-		anc_ind_recomb_anc = matrix[individu_selectioned].ancetre;
-		ind_select_anc = matrix[recombinaison_individu].ancetre;
-		printf("ind_select_anc : %d\n",ind_select_anc);
-		matrix[matrix[recombinaison_individu].ancetre].descendant_2 = individu_selectioned;
-                   
-                //my_pause();
-		printf("matrix[individu_selectioned].ancetre %d -> %d ind_select_anc\n",matrix[individu_selectioned].ancetre,ind_select_anc);
-		matrix[individu_selectioned].ancetre = ind_select_anc;
-		printf("matrix[individu_selectioned].descendant_1 %d -> %d ind_select_desc_1\n",matrix[individu_selectioned].descendant_1,ind_select_desc_1);
-		matrix[individu_selectioned].descendant_1 = ind_select_desc_1;
-		printf("matrix[matrix[recombinaison_individu].ancetre].ancetre %d -> %d anc_ind_recomb_anc\n",matrix[matrix[recombinaison_individu].ancetre].ancetre,anc_ind_recomb_anc);
-		matrix[matrix[recombinaison_individu].ancetre].ancetre = anc_ind_recomb_anc;
-		printf("fin\n");
-		return *matrix;
-
-	      }
-                
-	    if (matrix[recombinaison_individu].ancetre == matrix[individu_selectioned].descendant_2)
-	      {
-		/*
-                  on modifie le descendant 2 de l'individu selectionné.
-                  Mais il faut savoir qui lui donner par rapport
-                  a la position des descendant 1 ou 2 de l'individu
-                  de recombinaison
-		*/
-		printf("probleme ? A\n");
-		printf("------------------------------------------------\n");
-		if (matrix[matrix[recombinaison_individu].ancetre].descendant_2 == recombinaison_individu)
+                  else // Si on est a une distance supérieur a une branche
                   {
-                    ind_select_desc_2 = matrix[matrix[recombinaison_individu].ancetre].descendant_1;
-                    printf("A.1 ind_select_desc_2 : %d\n",ind_select_desc_2);
+                      int ancetre_suivant = matrix[recombinaison_individu].ancetre;
+                      int ancetre_precedant;
+
+
+                      while (ancetre_suivant != -1)
+                      {
+                          printf("Cas 4.1\n");
+                          printf("ancetre suivant = %d\n",ancetre_suivant);
+                          printf("individu_selectionned = %d\n", individu_selectioned);
+                          printf("individu recombinaison = %d\n", recombinaison_individu);
+                          if (ancetre_suivant == individu_selectioned)
+                          {
+                              if (ancetre_precedant == matrix[individu_selectioned].descendant_1)
+                              {
+                                  descendant_1_individu_selection =
+                                          matrix[matrix[recombinaison_individu].ancetre].descendant_2;
+                                  descendant_2_individu_selection = matrix[individu_selectioned].descendant_2;
+                              }
+                              else if (ancetre_precedant == matrix[individu_selectioned].descendant_2)
+                              {
+                                  descendant_1_individu_selection = matrix[individu_selectioned].descendant_1;
+                                  descendant_2_individu_selection =
+                                          matrix[matrix[recombinaison_individu].ancetre].descendant_2;
+                              }
+                              ancetre_suivant = -1;
+                          }
+                          else
+                          {
+                              ancetre_precedant = ancetre_suivant;
+                              printf("ancetre precedant : %d",ancetre_precedant);
+                              ancetre_suivant = matrix[ancetre_suivant].ancetre;
+                              printf("ancetre suivant : %d",ancetre_suivant);
+                          }
+                      }
                   }
-		if (matrix[matrix[recombinaison_individu].ancetre].descendant_1 == recombinaison_individu)
+
+                  if (recombinaison_individu == matrix[matrix[recombinaison_individu].ancetre].descendant_1)
                   {
-                    ind_select_desc_2 = matrix[matrix[recombinaison_individu].ancetre].descendant_2;
-                    printf("A.2 ind_select_desc_2 : %d\n",ind_select_desc_2);
+                      descendant_1_ancetre_recombinaison = matrix[matrix[recombinaison_individu].ancetre].descendant_1;
+                      descendant_2_ancetre_recombinaison = individu_selectioned;
                   }
+                  else if (recombinaison_individu == matrix[matrix[recombinaison_individu].ancetre].descendant_2)
+                  {
+                      descendant_1_ancetre_recombinaison = individu_selectioned;
+                      descendant_2_ancetre_recombinaison = matrix[matrix[recombinaison_individu].ancetre].descendant_2;
+                  }
+                  // Peut être envisager un retour de matrix
 
-		anc_ind_recomb_anc = matrix[individu_selectioned].ancetre;
-		ind_select_anc = matrix[recombinaison_individu].ancetre;
-		printf("ind_select_anc : %d\n",ind_select_anc);
-		matrix[matrix[recombinaison_individu].ancetre].descendant_1 = individu_selectioned;
-                   
-                //my_pause();
-		printf("matrix[individu_selectioned].ancetre %d -> %d ind_select_anc\n",matrix[individu_selectioned].ancetre,ind_select_anc);
-		matrix[individu_selectioned].ancetre = ind_select_anc;
-		printf("matrix[individu_selectioned].descendant_2 %d -> %d ind_select_desc_2\n",matrix[individu_selectioned].descendant_2,ind_select_desc_2);
-		matrix[individu_selectioned].descendant_2 = ind_select_desc_2;
-		printf("matrix[matrix[recombinaison_individu].ancetre].ancetre %d -> %d anc_ind_recomb_anc\n",matrix[matrix[recombinaison_individu].ancetre].ancetre,anc_ind_recomb_anc);                  
-		matrix[matrix[recombinaison_individu].ancetre].ancetre = anc_ind_recomb_anc;
-		printf("fin\n");
-		return *matrix;
-	      }            
-	  }
+                  // Pour l'ancetre de l'individu de recombinaison a pour ancêtre -1
+                  matrix[matrix[recombinaison_individu].ancetre].ancetre = -1;
 
-	  //si lors l'évènement de recombinaison se trouve a plus de 1 de l'individu de selection
-	  int ancetre_suivant = matrix[recombinaison_individu].ancetre;
-	  int ancetre_precedant;
-	  while(ancetre_suivant != -1)
-            {
-              if (ancetre_suivant == individu_selectioned)
-		{
-		  if (ancetre_precedant == matrix[individu_selectioned].descendant_2)
-		    {
-		      //my_pause();
-		      printf("-----------Est dans ce cas spécifique -------------------\n");
-		      //my_pause();
-		      /*
-			on modifie le descendant 2 de l'individu selectionné.
-			Mais il faut savoir qui lui donner par rapport
-			a la position des descendant 1 ou 2 de l'individu
-			de recombinaison
-		      */
+                  // Une longueur de branche = 0
+                  matrix[matrix[recombinaison_individu].ancetre].longueur_branche = 0;
 
-		      //changement de longueur
+                  // Pour l'ancetre de l'individu selectionné = ancetre de l'individu de recombinaison
+                  matrix[individu_selectioned].ancetre = matrix[recombinaison_individu].ancetre;
 
-		      /*Au niveau de la longueur de branche de l'ancetre de l'individu
-			de recombinaison prend la valeur de la longueur de branche de 
-			l'individu de selectoin. pour ne rien pertuber on modifie a 
-			la fin*/
-		      float tmp;
-		      tmp = matrix[individu_selectioned].longueur_branche;
+                  // Pour les descendants de l'individu selectionné
+                  matrix[individu_selectioned].descendant_1 = descendant_1_individu_selection;
+                  matrix[individu_selectioned].descendant_2 = descendant_2_individu_selection;
 
-		      /*Au niveau de la longueur de branche de l'individu de recombinaison
-			qui doit faire au total l'évent recombinaison. Dependant de ses 
-			descendant et donc on fait le test on sait deja que c'est le
-			descendant 2*/
-		      if (matrix[recombinaison_individu].descendant_2 == -1)
-			{
-			  matrix[recombinaison_individu].longueur_branche = event_recombinaison;
-			}else{
-			//on sait quil a des descendants
-			int y = recombinaison_individu;
-			float somme_total_descendant = matrix[y].longueur_branche;
-			while (matrix[y].descendant_1 != -1){
-			  y = matrix[y].descendant_1;
-			  somme_total_descendant += matrix[y].longueur_branche;
-			}
-			matrix[recombinaison_individu].longueur_branche =
-			  (event_recombinaison - somme_total_descendant);
-		      }
-
-		      /*Au niveau de l'individu de selection : dependant de ses
-			descendants.*/
-		      int x = individu_selectioned;
-		      printf("x = %d\n",x);
-		      float somme_total_descendant = matrix[x].longueur_branche;
-		      printf("x : somme_total_descendant avant = %f\n",somme_total_descendant);
-		      while (matrix[x].descendant_1 != -1){
-			x = matrix[x].descendant_1;
-			somme_total_descendant += matrix[x].longueur_branche;
-		      }
-		      printf("event recombinaison : %f\n",event_recombinaison);
-		      printf("somme_total_descendant : %f\n",somme_total_descendant);
-		      printf("soustraction = %f\n",event_recombinaison - somme_total_descendant);
-		      matrix[individu_selectioned].longueur_branche +=
-			event_recombinaison - somme_total_descendant;
-
-		      /*Au niveau du descendant 1 par rapport au fait 
-			qu'on sait que c'est le descandant 2 l'individu de 
-			recombinaison et dependant de ses descendants.*/
-		      if (matrix[matrix[matrix[recombinaison_individu].ancetre].descendant_1].descendant_1 == -1)
-			{
-			  matrix[matrix[matrix[recombinaison_individu].ancetre].descendant_1].longueur_branche = 
-			    matrix[matrix[matrix[recombinaison_individu].ancetre].descendant_1].longueur_branche +
-			    matrix[matrix[recombinaison_individu].ancetre].longueur_branche;
-			}else{
-			int z = matrix[matrix[recombinaison_individu].ancetre].descendant_1;
-			float somme_total_descendant = matrix[z].longueur_branche;
-			while (matrix[z].descendant_1 != -1){
-			  z = matrix[z].descendant_1;
-			  somme_total_descendant += matrix[z].longueur_branche;
-			}
-			matrix[matrix[matrix[recombinaison_individu].ancetre].descendant_1].longueur_branche =
-			  (somme_total_descendant + matrix[matrix[recombinaison_individu].ancetre].longueur_branche);                     
-		      }
-
-		      //on modifie 
-		      matrix[matrix[recombinaison_individu].ancetre].longueur_branche =
-			tmp;
-
-
-		      printf("probleme ? C\n");
-		      printf("------------------------------------------------\n");
-		      if (matrix[matrix[recombinaison_individu].ancetre].descendant_2 == recombinaison_individu)
-			{
-			  ind_select_desc_2 = matrix[matrix[recombinaison_individu].ancetre].descendant_1;
-			  printf("C.1 ind_select_desc_2 : %d\n",ind_select_desc_2);
-			  matrix[matrix[matrix[recombinaison_individu].ancetre].descendant_1].ancetre = 
-			    matrix[matrix[recombinaison_individu].ancetre].ancetre;
-			  matrix[matrix[recombinaison_individu].ancetre].descendant_1 = individu_selectioned;
-			}
-		      if (matrix[matrix[recombinaison_individu].ancetre].descendant_1 == recombinaison_individu)
-			{
-			  ind_select_desc_2 = matrix[matrix[recombinaison_individu].ancetre].descendant_2;
-			  printf("C.2 ind_select_desc_2 : %d\n",ind_select_desc_2);
-			  matrix[matrix[matrix[recombinaison_individu].ancetre].descendant_2].ancetre = 
-			    matrix[matrix[recombinaison_individu].ancetre].ancetre;
-			  matrix[matrix[recombinaison_individu].ancetre].descendant_2 = individu_selectioned;
-			}
-
-		      //normalement ici il prend l'ancetre de l'individu selectionné mais sur 5 indididu c'est -1 souvant
-		      anc_ind_recomb_anc = -1;
-		      ind_select_anc = matrix[recombinaison_individu].ancetre;
-		      printf("ind_select_anc : %d\n",ind_select_anc);
-
-                   
-		      //my_pause();
-		      printf("matrix[individu_selectioned].ancetre %d -> %d ind_select_anc\n",matrix[individu_selectioned].ancetre,ind_select_anc);
-		      matrix[individu_selectioned].ancetre = ind_select_anc;
-                  
-		      //peut etre très bien le descendant 1 comme le descedant 2
-		      if (matrix[recombinaison_individu].ancetre == matrix[matrix[matrix[recombinaison_individu].ancetre].ancetre].descendant_2)
-			{
-			  //printf("matrix[individu_selectioned].descendant_2 %d -> %d ind_select_desc_2\n",matrix[individu_selectioned].descendant_2,ind_select_desc_2);
-			  matrix[matrix[matrix[recombinaison_individu].ancetre].ancetre].descendant_2 = ind_select_desc_2;
-			}
-		      if (matrix[recombinaison_individu].ancetre == matrix[matrix[matrix[recombinaison_individu].ancetre].ancetre].descendant_1)
-			{
-			  //printf("matrix[individu_selectioned].descendant_2 %d -> %d ind_select_desc_2\n",matrix[individu_selectioned].descendant_2,ind_select_desc_2);
-			  matrix[matrix[matrix[recombinaison_individu].ancetre].ancetre].descendant_1 = ind_select_desc_2;
-			}
-                  
-		      printf("matrix[matrix[recombinaison_individu].ancetre].ancetre %d -> %d anc_ind_recomb_anc\n",matrix[matrix[recombinaison_individu].ancetre].ancetre,anc_ind_recomb_anc);                                  
-		      matrix[matrix[recombinaison_individu].ancetre].ancetre = anc_ind_recomb_anc;
-		      printf("fin\n");
-		      return *matrix;
-		    }
-
-		  if (ancetre_precedant == matrix[individu_selectioned].descendant_1)
-		    {
-		      //my_pause();
-		      printf("-----------Est dans ce cas spécifique -------------------\n");
-		      printf("probleme ? D\n");
-		      printf("------------------------------------------------\n");
-		      if (matrix[matrix[recombinaison_individu].ancetre].descendant_2 == recombinaison_individu)
-			{
-			  ind_select_desc_1 = matrix[matrix[recombinaison_individu].ancetre].descendant_1;
-			  printf("D.1 ind_select_desc_1 : %d\n",ind_select_desc_1);
-			  matrix[matrix[matrix[recombinaison_individu].ancetre].descendant_1].ancetre = 
-			    matrix[matrix[recombinaison_individu].ancetre].ancetre;
-			  matrix[matrix[recombinaison_individu].ancetre].descendant_1 = individu_selectioned;
-			}
-		      if (matrix[matrix[recombinaison_individu].ancetre].descendant_1 == recombinaison_individu)
-			{
-			  ind_select_desc_1 = matrix[matrix[recombinaison_individu].ancetre].descendant_2;
-			  printf("D.2 ind_select_desc_1 : %d\n",ind_select_desc_1);
-			  matrix[matrix[matrix[recombinaison_individu].ancetre].descendant_2].ancetre = 
-			    matrix[matrix[recombinaison_individu].ancetre].ancetre;
-			  matrix[matrix[recombinaison_individu].ancetre].descendant_2 = individu_selectioned;
-			}
-
-		      anc_ind_recomb_anc = -1;
-		      ind_select_anc = matrix[recombinaison_individu].ancetre;
-		      printf("ind_select_anc : %d\n",ind_select_anc);
-		      matrix[matrix[recombinaison_individu].ancetre].descendant_2 = individu_selectioned;
-                   
-		      //my_pause();
-		      printf("matrix[individu_selectioned].ancetre %d -> %d ind_select_anc\n",matrix[individu_selectioned].ancetre,ind_select_anc);
-		      matrix[individu_selectioned].ancetre = ind_select_anc;
-
-		      //peut etre très bien le descendant 1 comme le descedant 2
-		      if (matrix[recombinaison_individu].ancetre == matrix[matrix[matrix[recombinaison_individu].ancetre].ancetre].descendant_2)
-			{
-			  //printf("matrix[individu_selectioned].descendant_2 %d -> %d ind_select_desc_2\n",matrix[individu_selectioned].descendant_2,ind_select_desc_2);
-			  matrix[matrix[matrix[recombinaison_individu].ancetre].ancetre].descendant_2 = ind_select_desc_1;
-			}
-		      if (matrix[recombinaison_individu].ancetre == matrix[matrix[matrix[recombinaison_individu].ancetre].ancetre].descendant_1)
-			{
-			  //printf("matrix[individu_selectioned].descendant_2 %d -> %d ind_select_desc_2\n",matrix[individu_selectioned].descendant_2,ind_select_desc_2);
-			  matrix[matrix[matrix[recombinaison_individu].ancetre].ancetre].descendant_1 = ind_select_desc_1;
-			}
-
-		      //printf("matrix[individu_selectioned].descendant_1 %d -> %d ind_select_desc_1\n",matrix[individu_selectioned].descendant_1,ind_select_desc_1);
-		      printf("matrix[matrix[recombinaison_individu].ancetre].ancetre %d -> %d anc_ind_recomb_anc\n",matrix[matrix[recombinaison_individu].ancetre].ancetre,anc_ind_recomb_anc);
-		      matrix[matrix[recombinaison_individu].ancetre].ancetre = anc_ind_recomb_anc;
-		      printf("fin\n");
-		      return *matrix;
-		    }                
-		}else{
-                ancetre_precedant = ancetre_suivant;
-                printf("ancetre précèdent = %d \n",ancetre_precedant);
-                ancetre_suivant = matrix[ancetre_suivant].ancetre;
-                printf("ancetre_suivant = %d\n",ancetre_suivant);
+                  // Pour les descendants de l'ancetre de recombinaison
+                  matrix[matrix[recombinaison_individu].ancetre].descendant_1 = descendant_1_ancetre_recombinaison;
+                  matrix[matrix[recombinaison_individu].ancetre].descendant_2 = descendant_2_ancetre_recombinaison;
               }
-            }
-	  printf("-----------N'est pas dans ce cas-------------------\n");
-	  //
-	  int anc_anc_recombinaison_desc_1, anc_anc_recombinaison_desc_2;
-	  int ancetre_machin;
-	  int ancetre_individu_selectionne;
-	  int last_individu_second_tableau;
 
-	  //du point de vue de la recombinaison.desc + anc.anc.recombinaison-> desc
-	  if (matrix[matrix[recombinaison_individu].ancetre].descendant_1 == recombinaison_individu)
-            {
-              anc_ind_recomb_desc_1 = matrix[matrix[recombinaison_individu].ancetre].descendant_1;
-              anc_ind_recomb_desc_2 = individu_selectioned;
-              if (matrix[matrix[recombinaison_individu].ancetre].ancetre == -1)
-		{
-		  printf("COUCOU B-1\n");
-		  //my_pause();
-		  //longueur des branches
-		  /* récuper l'évènement de coalescence (sur l'individu de selection)
-		     et l'évènement de coalescence (sur l'individu de recombinaison)
-		  */
-		  int i = recombinaison_individu;
-		  float somme_total = matrix[recombinaison_individu].longueur_branche;
-		  while (matrix[i].descendant_1 != -1){
-                    i = matrix[i].descendant_1;
-                    somme_total += matrix[i].longueur_branche;
-		  }
+              if (recombinaison_individu == matrix[matrix[recombinaison_individu].ancetre].descendant_2)
+              {
+                  printf("Cas 4.2\n");
+                  // Pour les descendants de l'indvidu de sélection
+                  int descendant_1_individu_selection, descendant_2_individu_selection;
 
-		  int y = matrix[individu_selectioned].descendant_1;
-		  float somme_total_descendant = matrix[y].longueur_branche;
-		  if (matrix[individu_selectioned].descendant_1 == -1)
-		    {
-		      somme_total_descendant = 0;
-		    }else{
-		    while (matrix[y].descendant_1 != -1){
-                      y = matrix[y].descendant_1;
-                      somme_total_descendant += matrix[y].longueur_branche;
-		    }
-		  }
+                  // Pour les descendants de l'ancetre de l'individu de recombinaison
+                  int descendant_1_ancetre_recombinaison, descendant_2_ancetre_recombinaison;
 
-		  int z = matrix[recombinaison_individu].descendant_1;
-		  float somme_total_recombinant = matrix[z].longueur_branche;
-		  if (matrix[recombinaison_individu].descendant_1 == -1)
-		    {
-		      somme_total_recombinant = 0;
-		    }else{
-		    while (matrix[z].descendant_1 != -1){
-                      z = matrix[z].descendant_1;
-                      somme_total_recombinant += matrix[z].longueur_branche;
-		    }
-		  }
+                  // Si on est a une distance d'une branche.
+                  if (matrix[recombinaison_individu].ancetre == matrix[individu_selectioned].descendant_1)
+                  {
+                      descendant_1_individu_selection =
+                              matrix[matrix[recombinaison_individu].ancetre].descendant_1;
+                      descendant_2_individu_selection = matrix[individu_selectioned].descendant_2;
+                  }
+                  else if (matrix[recombinaison_individu].ancetre == matrix[individu_selectioned].descendant_2)
+                  {
+                      descendant_1_individu_selection = matrix[individu_selectioned].descendant_1;
+                      descendant_2_individu_selection =
+                              matrix[matrix[recombinaison_individu].ancetre].descendant_1;
+                  }
+                  else // Si on est a une distance supérieur a une branche
+                  {
+                      int ancetre_suivant = matrix[recombinaison_individu].ancetre;
+                      int ancetre_precedant;
 
-		  printf("Temps coalescence (indididu de selection) = %f\n",event_coalescent);
-		  printf("Temps recombinaison (indididu de recombinaison_individu) = %f\n",event_recombinaison);
-		  //mais avant de passer le descenant a 0 alonger ses descendants mais il faut savoir les quelles
-		  if (individu_selectioned == matrix[matrix[individu_selectioned].ancetre].descendant_1)
-		    {
-		      if (matrix[matrix[matrix[individu_selectioned].ancetre].descendant_2].descendant_1 == -1)
-			{
-			  matrix[matrix[matrix[individu_selectioned].ancetre].descendant_2].longueur_branche +=
-			    matrix[matrix[individu_selectioned].ancetre].longueur_branche;
-			}else{
-			matrix[matrix[matrix[individu_selectioned].ancetre].descendant_2].longueur_branche +=
-			  matrix[matrix[individu_selectioned].ancetre].longueur_branche - somme_total_descendant;
-		      }
-		    }
-		  if (individu_selectioned == matrix[matrix[individu_selectioned].ancetre].descendant_2)
-		    {
-		      if (matrix[matrix[matrix[individu_selectioned].ancetre].descendant_1].descendant_1 == -1)
-			{
-			  matrix[matrix[matrix[individu_selectioned].ancetre].descendant_1].longueur_branche +=
-			    matrix[matrix[individu_selectioned].ancetre].longueur_branche;
-			}else{
-			matrix[matrix[matrix[individu_selectioned].ancetre].descendant_1].longueur_branche +=
-			  matrix[matrix[individu_selectioned].ancetre].longueur_branche - somme_total_descendant;
-		      }
-		    }
-		  float longueur_importante =  matrix[matrix[matrix[recombinaison_individu].ancetre].descendant_2].longueur_branche;
-		  //on passe pour le descendant 2 la longueur de 0
-		  matrix[matrix[matrix[recombinaison_individu].ancetre].descendant_2].longueur_branche = 0;
-            
-		  printf("somme total : %f\n",somme_total);
-		  printf("somme total des descendants : %f\n",somme_total_descendant);
-		  printf("somme_total_recombinant : %f\n",somme_total_recombinant);
+                      while (ancetre_suivant != -1)
+                      {
+                          printf("Cas 4.2\n");
+                          printf("ancetre suivant = %d\n",ancetre_suivant);
+                          printf("individu_selectionned = %d\n", individu_selectioned);
+                          printf("individu recombinaison = %d\n", recombinaison_individu);
+                          if (ancetre_suivant == individu_selectioned)
+                          {
+                              if (ancetre_precedant == matrix[individu_selectioned].descendant_1)
+                              {
+                                  descendant_1_individu_selection =
+                                          matrix[matrix[recombinaison_individu].ancetre].descendant_1;
+                                  descendant_2_individu_selection = matrix[individu_selectioned].descendant_2;
+                              }
+                              else if (ancetre_precedant == matrix[individu_selectioned].descendant_2)
+                              {
+                                  descendant_1_individu_selection = matrix[individu_selectioned].descendant_1;
+                                  descendant_2_individu_selection =
+                                          matrix[matrix[recombinaison_individu].ancetre].descendant_1;
+                              }
+                              ancetre_suivant = -1;
+                          }
+                          else
+                          {
+                              ancetre_precedant = ancetre_suivant;
+                              printf("ancetre precedant : %d",ancetre_precedant);
+                              ancetre_suivant = matrix[ancetre_suivant].ancetre;
+                              printf("ancetre suivant : %d",ancetre_suivant);
+                          }
+                      }
+                  }
+                  // Peut être envisager un retour de matrix
+                  if (recombinaison_individu == matrix[matrix[recombinaison_individu].ancetre].descendant_1)
+                  {
+                      descendant_1_ancetre_recombinaison = matrix[matrix[recombinaison_individu].ancetre].descendant_1;
+                      descendant_2_ancetre_recombinaison = individu_selectioned;
+                  }
+                  else if (recombinaison_individu == matrix[matrix[recombinaison_individu].ancetre].descendant_2)
+                  {
+                      descendant_1_ancetre_recombinaison = individu_selectioned;
+                      descendant_2_ancetre_recombinaison = matrix[matrix[recombinaison_individu].ancetre].descendant_2;
+                  }
 
-		  matrix[matrix[recombinaison_individu].ancetre].longueur_branche +=
-		    (somme_total - event_coalescent);
-		  matrix[recombinaison_individu].longueur_branche = event_coalescent - somme_total_recombinant;
-		  matrix[individu_selectioned].longueur_branche = event_coalescent;
+                  // Pour l'ancetre de l'individu de recombinaison a pour ancêtre -1
+                  matrix[matrix[recombinaison_individu].ancetre].ancetre = -1;
 
-		  //echange de variable
-		  if (matrix[matrix[recombinaison_individu].ancetre].descendant_2 ==
-		      matrix[individu_selectioned].ancetre)
-		    {
-		      printf("COUCOU A\n");
-		      ancetre_machin = -1;
-		    }else{
-		    printf("COUCOU B - 2\n");
-		    //my_pause();
-		    // changer le longueur de branche 
-		    /*Ici changer la longueur des descendants du derniers individu
-		     */
+                  // Une longueur de branche = 0
+                  matrix[matrix[recombinaison_individu].ancetre].longueur_branche = 0;
 
-		    /*
-		      matrix[matrix[last_individu].descendant_1].longueur_branche += 
-		      longueur_importante;
-		      matrix[matrix[last_individu].descendant_2].longueur_branche += 
-		      longueur_importante;
-		    */
+                  // Pour l'ancetre de l'individu selectionné = ancetre de l'individu de recombinaison
+                  matrix[individu_selectioned].ancetre = matrix[recombinaison_individu].ancetre;
 
+                  // Pour les descendants de l'individu selectionné
+                  matrix[individu_selectioned].descendant_1 = descendant_1_individu_selection;
+                  matrix[individu_selectioned].descendant_2 = descendant_2_individu_selection;
 
-		    //car on sait que l'individu de recombinaison = descendant 1 donc on modifie descendant 2
-		    last_individu_second_tableau = matrix[matrix[recombinaison_individu].ancetre].descendant_2;              
-		    ancetre_individu_selectionne = -1;
-		    ancetre_machin = matrix[matrix[individu_selectioned].ancetre].ancetre;
-		    printf("last_individu_second_tableau = %d\n",last_individu_second_tableau);
-		    printf("ancetre_individu_selectionne = %d\n",ancetre_individu_selectionne);
-		    printf("ancetre_machin = %d\n",ancetre_machin);
+                  // Pour les descendants de l'ancetre de recombinaison
+                  matrix[matrix[recombinaison_individu].ancetre].descendant_1 = descendant_1_ancetre_recombinaison;
+                  matrix[matrix[recombinaison_individu].ancetre].descendant_2 = descendant_2_ancetre_recombinaison;
+              }
+              return *matrix;
+          }
 
-		    printf("longueur_importante = %f\n",longueur_importante );
+          // Prenons le 2nd cas lorsque l'ancetre de l'ancetre de recombinaison == -1.
+          if (matrix[matrix[recombinaison_individu].ancetre].ancetre == -1)
+          {
+              printf("Cas 5");
+              // Les descendants de l'ancêtre de recombinaison
+              int descendant_1_ancetre_recombinaison, descendant_2_ancetre_recombinaison;
 
- 
+              // Les descendants de l'ancêtre de l'individu de selection
+              int descendant_1_ancetre_individu_selection, descendant_2_ancetre_individu_selection;
 
-		  }
-		  anc_ind_recomb_anc = matrix[individu_selectioned].ancetre;
-		}
-              else if (matrix[recombinaison_individu].ancetre == matrix[matrix[matrix[recombinaison_individu].ancetre].ancetre].descendant_2)
-		{
-		  printf("probleme ICI\n");
-		  //my_pause();
+              // Pour l'ancetre de l'ancetre de l'individu de recombinaison;
+              int ancetre_ancetre_individu_recombinaison;
 
-		  //longueur des branches
-                
-		  /*
-		    Ici on ne sait pas si c'est le descendant 2 l'individu de recombinaison on 
-		    le dertermine par un simple test. SI c'est desc 2 = ind recombinaison on change
-		    l'individu 1, sinoon desc 1 == ind recombinaison on change l'individu 1 de longueur.
-		  */
-		  if (recombinaison_individu == matrix[matrix[recombinaison_individu].ancetre].descendant_1) 
-		    {
-		      //comme c'est desc 1 on change desc 2
-		      matrix[matrix[matrix[recombinaison_individu].ancetre].descendant_2].longueur_branche +=
-			matrix[matrix[recombinaison_individu].ancetre].longueur_branche;
-		    }else{//si c'est pas desc 1 c'est desc 2
-		    //comme c'est desc 2 on change desc 1
-		    matrix[matrix[matrix[recombinaison_individu].ancetre].descendant_1].longueur_branche +=
-		      matrix[matrix[recombinaison_individu].ancetre].longueur_branche;
-		  }
+              if (recombinaison_individu == matrix[matrix[recombinaison_individu].ancetre].descendant_1)
+              {
+                  matrix[matrix[matrix[recombinaison_individu].ancetre].descendant_2].ancetre =
+                          -1;
+              }
+              else if (recombinaison_individu == matrix[matrix[recombinaison_individu].ancetre].descendant_2)
+              {
+                  matrix[matrix[matrix[recombinaison_individu].ancetre].descendant_1].ancetre =
+                          -1;
+              }
 
-		  /*Au niveau de la longueur de branche de l'ancêtre de l'individu
-		    de recombinaison qui est égale la longueur total de l'individu 
-		    selectionné c'est à dire que si l'individu sectionné a des 
-		    descendant faire la somme des longueurs des individus et soustraire
-		    l'evenement de recombinaison sinon la longueur est égale a la longueur 
-		    de l'individu selectionné moins l'évènement de recombinaison.
-		  */
-		  if (matrix[individu_selectioned].descendant_1 == -1 &&
-		      matrix[individu_selectioned].descendant_2 == -1)
-		    {
-		      matrix[matrix[recombinaison_individu].ancetre].longueur_branche =
-			matrix[individu_selectioned].longueur_branche - event_recombinaison;
-		    }else{
-		    //sinon il y a forcément des descendants
-		    int x = individu_selectioned;
-		    float somme_total = matrix[x].longueur_branche;
-		    while (matrix[x].descendant_1 != -1){
-                      x = matrix[x].descendant_1;
-                      somme_total += matrix[x].longueur_branche;
-		    }
-		    matrix[matrix[recombinaison_individu].ancetre].longueur_branche =
-		      matrix[matrix[recombinaison_individu].ancetre].longueur_branche - (somme_total - event_recombinaison);
-		  }
+              // Au niveau des descendants de l'ancêtre de recombinaison
+              if (recombinaison_individu == matrix[matrix[recombinaison_individu].ancetre].descendant_1)
+              {
+                  descendant_1_ancetre_recombinaison = recombinaison_individu;
+                  // on change le descendant 2 de l'ancetre de recombinaison = individu_selection.
+                  descendant_2_ancetre_recombinaison = individu_selectioned;
+              }
+              else if (recombinaison_individu == matrix[matrix[recombinaison_individu].ancetre].descendant_2)
+              {
+                  // on change le descendant 1 de l'ancetre de recombinaison = individu selection.
+                  descendant_1_ancetre_recombinaison = individu_selectioned;
+                  descendant_1_ancetre_recombinaison = recombinaison_individu;
+              }
 
-		  /*Au niveau de la longueur de branche de l'individu de
-		    recombinaison. Ici on sait que c'est le descendant_2 voir
-		    plus haut la condition. Elle est dependant des descendants
-		    donc elle est égale soit à la longueur de la branche - (somme des individus -
-		    event recombinaison) soit egale a event recombinaison car dernier descendant.
-		    Pour savoir on fait un test des descendants*/
-		  if (matrix[recombinaison_individu].descendant_1 == -1 &&
-		      matrix[recombinaison_individu].descendant_2 == -1)
-		    {
-		      matrix[recombinaison_individu].longueur_branche = 
-			event_recombinaison;
-		    }else{
-		    //sinon il y a forcément des descendants
-		    int x = recombinaison_individu;
-		    float somme_total = matrix[x].longueur_branche;
-		    while (matrix[x].descendant_1 != -1){
-                      x = matrix[x].descendant_1;
-                      somme_total += matrix[x].longueur_branche;
-		    }
-		    matrix[recombinaison_individu].longueur_branche =
-		      matrix[recombinaison_individu].longueur_branche - (somme_total - event_recombinaison);
-		  }
+              // Au niveau des descendants de l'ancêtre de selection
+              if (individu_selectioned == matrix[matrix[individu_selectioned].ancetre].descendant_1)
+              {
+                  // on modifie le descendant 1 de l'ancetre de selection
+                  descendant_1_ancetre_individu_selection = matrix[recombinaison_individu].ancetre;
+                  descendant_2_ancetre_individu_selection =
+                          matrix[matrix[individu_selectioned].ancetre].descendant_2;
+              }
+              else if (individu_selectioned == matrix[matrix[individu_selectioned].ancetre].descendant_2)
+              {
+                  descendant_1_ancetre_individu_selection =
+                          matrix[matrix[individu_selectioned].ancetre].descendant_1;
+                  // on modifie le descendant 2 le l'ancetre de selection
+                  descendant_2_ancetre_individu_selection = matrix[recombinaison_individu].ancetre;
+              }
 
-		  /*Au niveau de la longueur de branche de l'individu de
-		    selection c'est pratiquement le même algorithme que
-		    celui au-dessus. Cette longueur est dépendant de ces 
-		    descedant si il en a. Donc elle est soit egale à 
-		    longueur de l'individu selectionnée - (somme individu - event recombinaison)
-		    soit égale a l'évènement de recombinaison lorsque qu'il
-		    le dernier descendant. */
-		  if (matrix[individu_selectioned].descendant_1 == -1 &&
-		      matrix[individu_selectioned].descendant_2 == -1)
-		    {
-		      matrix[individu_selectioned].longueur_branche = 
-			event_recombinaison;
-		    }else{
-		    //sinon il y a forcément des descendants
-		    int x = individu_selectioned;
-		    float somme_total = matrix[x].longueur_branche;
-		    while (matrix[x].descendant_1 != -1){
-                      x = matrix[x].descendant_1;
-                      somme_total += matrix[x].longueur_branche;
-		    }
-		    matrix[individu_selectioned].longueur_branche =
-		      matrix[individu_selectioned].longueur_branche - (somme_total - event_recombinaison);
-		  }
+              // Au niveau de l'ancêtre de l'ancêtre de l'individu de recombinaison
+              ancetre_ancetre_individu_recombinaison = matrix[individu_selectioned].ancetre;
 
-                
-                
-		  //echange de variable
-		  ancetre_machin = matrix[matrix[individu_selectioned].ancetre].ancetre;
-		  anc_ind_recomb_anc = matrix[individu_selectioned].ancetre;
-		  matrix[matrix[matrix[recombinaison_individu].ancetre].ancetre].descendant_2 = matrix[matrix[recombinaison_individu].ancetre].descendant_2;
-		}
-              //else
-              else if (matrix[recombinaison_individu].ancetre == matrix[matrix[matrix[recombinaison_individu].ancetre].ancetre].descendant_1)
-		{
-		  printf("PROBLEME AZERTY\n");
-		  //my_pause();
-		  //longueur des branches
-                
-		  /*
-		    Ici on ne sait pas si c'est le descendant 1 l'individu de recombinaison on 
-		    le dertermine par un simple test. SI c'est desc 1 = ind recombinaison on change
-		    l'individu 2, sinoon desc 2 == ind recombinaison on change l'individu 1 de longueur.
-		  */
-		  if (recombinaison_individu == matrix[matrix[recombinaison_individu].ancetre].descendant_1) 
-		    {
-		      //comme c'est desc 1 on change desc 2
-		      matrix[matrix[matrix[recombinaison_individu].ancetre].descendant_2].longueur_branche +=
-			matrix[matrix[recombinaison_individu].ancetre].longueur_branche;
-		    }else{//si c'est pas desc 1 c'est desc 2
-		    //comme c'est desc 2 on change desc 1
-		    matrix[matrix[matrix[recombinaison_individu].ancetre].descendant_1].longueur_branche +=
-		      matrix[matrix[recombinaison_individu].ancetre].longueur_branche;
-		  }
+              // Pour les descendants de l'ancetre de recombinaison
+              matrix[matrix[recombinaison_individu].ancetre].descendant_1 = descendant_1_ancetre_recombinaison;
+              matrix[matrix[recombinaison_individu].ancetre].descendant_2 = descendant_2_ancetre_recombinaison;
 
-		  /*Au niveau de la longueur de branche de l'ancêtre de l'individu
-		    de recombinaison qui est égale la longueur total de l'individu 
-		    selectionné c'est à dire que si l'individu sectionné a des 
-		    descendant faire la somme des longueurs des individus et soustraire
-		    l'evenement de recombinaison sinon la longueur est égale a la longueur 
-		    de l'individu selectionné moins l'évènement de recombinaison.
-		  */
-		  if (matrix[individu_selectioned].descendant_1 == -1 &&
-		      matrix[individu_selectioned].descendant_2 == -1)
-		    {
-		      matrix[matrix[recombinaison_individu].ancetre].longueur_branche =
-			matrix[individu_selectioned].longueur_branche - event_recombinaison;
-		    }else{
-		    //sinon il y a forcément des descendants
-		    int x = individu_selectioned;
-		    float somme_total = matrix[x].longueur_branche;
-		    while (matrix[x].descendant_1 != -1){
-                      x = matrix[x].descendant_1;
-                      somme_total += matrix[x].longueur_branche;
-		    }
-		    matrix[matrix[recombinaison_individu].ancetre].longueur_branche =
-		      matrix[matrix[recombinaison_individu].ancetre].longueur_branche - (somme_total - event_recombinaison);
-		  }
+              // Pour les descendants de l'ancetre de l'individu de selection
+              matrix[matrix[individu_selectioned].ancetre].descendant_1 = descendant_1_ancetre_individu_selection;
+              matrix[matrix[individu_selectioned].ancetre].descendant_2 = descendant_2_ancetre_individu_selection;
 
-		  /*Au niveau de la longueur de branche de l'individu de
-		    recombinaison. Ici on sait que c'est le descendant_2 voir
-		    plus haut la condition. Elle est dependant des descendants
-		    donc elle est égale soit à la longueur de la branche - (somme des individus -
-		    event recombinaison) soit egale a event recombinaison car dernier descendant.
-		    Pour savoir on fait un test des descendants*/
-		  if (matrix[recombinaison_individu].descendant_1 == -1 &&
-		      matrix[recombinaison_individu].descendant_2 == -1)
-		    {
-		      matrix[recombinaison_individu].longueur_branche = 
-			event_recombinaison;
-		    }else{
-		    //sinon il y a forcément des descendants
-		    int x = recombinaison_individu;
-		    float somme_total = matrix[x].longueur_branche;
-		    while (matrix[x].descendant_1 != -1){
-                      x = matrix[x].descendant_1;
-                      somme_total += matrix[x].longueur_branche;
-		    }
-		    matrix[recombinaison_individu].longueur_branche =
-		      matrix[recombinaison_individu].longueur_branche - (somme_total - event_recombinaison);
-		  }
+              // Pour l'ancetre de l'ancetre de l'individu de recombinaison
+              matrix[matrix[recombinaison_individu].ancetre].ancetre = ancetre_ancetre_individu_recombinaison;
 
-		  /*Au niveau de la longueur de branche de l'individu de
-		    selection c'est pratiquement le même algorithme que
-		    celui au-dessus. Cette longueur est dépendant de ces 
-		    descedant si il en a. Donc elle est soit egale à 
-		    longueur de l'individu selectionnée - (somme individu - event recombinaison)
-		    soit égale a l'évènement de recombinaison lorsque qu'il
-		    le dernier descendant. */
-		  if (matrix[individu_selectioned].descendant_1 == -1 &&
-		      matrix[individu_selectioned].descendant_2 == -1)
-		    {
-		      matrix[individu_selectioned].longueur_branche = 
-			event_recombinaison;
-		    }else{
-		    //sinon il y a forcément des descendants
-		    int x = individu_selectioned;
-		    float somme_total = matrix[x].longueur_branche;
-		    while (matrix[x].descendant_1 != -1){
-                      x = matrix[x].descendant_1;
-                      somme_total += matrix[x].longueur_branche;
-		    }
-		    matrix[individu_selectioned].longueur_branche =
-		      matrix[individu_selectioned].longueur_branche - (somme_total - event_recombinaison);
-		  }
+              return *matrix;
+          }
 
+          // Prenons le dernier cas lorsque l'ancetre de l'ancetre de recombinaison != -1.
+          if (matrix[matrix[recombinaison_individu].ancetre].ancetre != -1)
+          {
+              printf("Cas 6\n");
+              // Les descendants de l'ancêtre de recombinaison
+              int descendant_1_ancetre_recombinaison, descendant_2_ancetre_recombinaison;
 
+              // Les descendants de l'ancêtre de l'individu de selection
+              int descendant_1_ancetre_individu_selection, descendant_2_ancetre_individu_selection;
 
-		  //echange de variable
-		  ancetre_machin = matrix[matrix[individu_selectioned].ancetre].ancetre;
-		  anc_ind_recomb_anc = matrix[individu_selectioned].ancetre;
-		  matrix[matrix[matrix[recombinaison_individu].ancetre].ancetre].descendant_1 = matrix[matrix[recombinaison_individu].ancetre].descendant_2;
-		}
-            }
+              // Pour l'ancetre de l'ancetre de l'individu de recombinaison;
+              int ancetre_ancetre_individu_recombinaison;
 
-	  //commencer là
-	  if (matrix[matrix[recombinaison_individu].ancetre].descendant_2 == recombinaison_individu)
-            {
-              //my_pause();
-              anc_ind_recomb_desc_1 = individu_selectioned;
-              anc_ind_recomb_desc_2 = matrix[matrix[recombinaison_individu].ancetre].descendant_2;
+              // Pour les descendants le l'individu de selection (qui peuvent changer dans de rare cas).
+              int descendant_1_individu_selection, descendant_2_individu_selection;
 
-              //cette condition n'est jamais vérifier pour 5 individu ?
-              if (matrix[matrix[recombinaison_individu].ancetre].ancetre == -1)
-		{
-		  printf("X\n");
-		  //my_pause();
-		  anc_ind_recomb_anc = matrix[individu_selectioned].ancetre;
-		  ancetre_machin = -1;
-		}
-              else if (matrix[recombinaison_individu].ancetre == matrix[matrix[matrix[recombinaison_individu].ancetre].ancetre].descendant_2)
-		{
-		  //my_pause();
-		  printf("Y\n");
-		  //changement de longueur de branche
+              // Au niveau des descendants de l'ancêtre de recombinaison
+              if (recombinaison_individu == matrix[matrix[recombinaison_individu].ancetre].descendant_1)
+              {
+                  descendant_1_ancetre_recombinaison = recombinaison_individu;
+                  // on change le descendant 2 de l'ancetre de recombinaison = individu_selection.
+                  descendant_2_ancetre_recombinaison = individu_selectioned;
+                  /* et le descendant 2 par rapport a l'ancetre de recombinaison a pour ancetre
+                   * l'ancetre de l'ancetre de recombinaison */
+                  matrix[matrix[matrix[recombinaison_individu].ancetre].descendant_2].ancetre =
+                          matrix[matrix[recombinaison_individu].ancetre].ancetre;
+              }
+              else if (recombinaison_individu == matrix[matrix[recombinaison_individu].ancetre].descendant_2)
+              {
+                  // on change le descendant 1 de l'ancetre de recombinaison = individu selection.
+                  descendant_1_ancetre_recombinaison = individu_selectioned;
+                  descendant_2_ancetre_recombinaison = recombinaison_individu;
+                  /* et le descendant 2 par rapport a l'ancetre de recombinaison a pour ancetre
+                   * l'ancetre de l'ancetre de recombinaison */
+                  matrix[matrix[matrix[recombinaison_individu].ancetre].descendant_1].ancetre =
+                          matrix[matrix[recombinaison_individu].ancetre].ancetre;
+              }
 
-		  /*Au niveau du descendant 1 :
-		    on change la lg de brche de l'ancetre du descendant 1 
-		    par rapport a l'individu de recombinaison qui est en descendant 2
-		    en rajoutant la longueur de branche de l'ancetre de l'individu de 
-		    recombinaison*/
-		  matrix[matrix[matrix[recombinaison_individu].ancetre].descendant_1].longueur_branche +=
-		    matrix[matrix[recombinaison_individu].ancetre].longueur_branche;
+              // Au niveau des descendants de l'individu de selection
+              if (matrix[individu_selectioned].descendant_1 != -1 &&
+              matrix[individu_selectioned].descendant_2 != -1)
+              {
+                  //on fait le test pour savoir s'ils ont un ancetre en commun
+                  int ancetre_suivant = matrix[recombinaison_individu].ancetre;
+                  int ancetre_precedant;
 
-		  /*Au niveau de la longueur de branche de l'ancêtre de l'individu
-		    de recombinaison qui est égale la longueur total de l'individu 
-		    selectionné c'est à dire que si l'individu sectionné a des 
-		    descendant faire la somme des longueurs des individus et soustraire
-		    l'evenement de recombinaison sinon la longueur est égale a la longueur 
-		    de l'individu selectionné moins l'évènement de recombinaison.
-		  */
-		  if (matrix[individu_selectioned].descendant_1 == -1 &&
-		      matrix[individu_selectioned].descendant_2 == -1)
-		    {
-		      matrix[matrix[recombinaison_individu].ancetre].longueur_branche =
-			matrix[individu_selectioned].longueur_branche - event_recombinaison;
-		    }else{
-		    //sinon il y a forcément des descendants
-		    int x = individu_selectioned;
-		    float somme_total = matrix[x].longueur_branche;
-		    while (matrix[x].descendant_1 != -1){
-                      x = matrix[x].descendant_1;
-                      somme_total += matrix[x].longueur_branche;
-		    }
-		    matrix[matrix[recombinaison_individu].ancetre].longueur_branche =
-		      somme_total - event_recombinaison;
-		  }
+                  while (ancetre_suivant != -1)
+                  {
+                      printf("Cas 6.2\n");
+                      printf("ancetre suivant = %d\n",ancetre_suivant);
+                      printf("individu_selectionned = %d\n", individu_selectioned);
+                      printf("individu recombinaison = %d\n", recombinaison_individu);
+                      if (ancetre_suivant == individu_selectioned)
+                      {
+                          if (ancetre_precedant == matrix[individu_selectioned].descendant_1)
+                          {
+                              if (recombinaison_individu == matrix[matrix[recombinaison_individu].ancetre].descendant_1)
+                              {
+                                  descendant_1_individu_selection =
+                                          matrix[matrix[recombinaison_individu].ancetre].descendant_2;
+                                  descendant_2_individu_selection = matrix[individu_selectioned].descendant_2;
+                              }
+                              else if (recombinaison_individu == matrix[matrix[recombinaison_individu].ancetre].descendant_2)
+                              {
+                                  descendant_1_individu_selection =
+                                          matrix[matrix[recombinaison_individu].ancetre].descendant_1;
+                                  descendant_2_individu_selection = matrix[individu_selectioned].descendant_2;
+                              }
+                          }
+                          if (ancetre_precedant == matrix[individu_selectioned].descendant_2)
+                          {
+;                             if (recombinaison_individu == matrix[matrix[recombinaison_individu].ancetre].descendant_1)
+                              {
+                                  descendant_1_individu_selection = matrix[individu_selectioned].descendant_1;
+                                  descendant_2_individu_selection =
+                                          matrix[matrix[recombinaison_individu].ancetre].descendant_2;
+                              }
+                              else if (recombinaison_individu == matrix[matrix[recombinaison_individu].ancetre].descendant_2)
+                              {
+                                  descendant_1_individu_selection = matrix[individu_selectioned].descendant_1;
+                                  descendant_2_individu_selection =
+                                          matrix[matrix[recombinaison_individu].ancetre].descendant_1;
+                              }
+                          }
+                          ancetre_suivant = -1;
+                      }
+                      else
+                      {
+                          ancetre_precedant = ancetre_suivant;
+                          printf("ancetre precedant : %d",ancetre_precedant);
+                          ancetre_suivant = matrix[ancetre_suivant].ancetre;
+                          printf("ancetre suivant : %d",ancetre_suivant);
+                          descendant_1_individu_selection = matrix[individu_selectioned].descendant_1;
+                          descendant_2_individu_selection = matrix[individu_selectioned].descendant_2;
+                      }
+                  }
+              }
+              else
+              {
+                  //On ne modifie pas les descendants des individus de selection
+                  descendant_1_individu_selection = matrix[individu_selectioned].descendant_1;
+                  descendant_2_individu_selection = matrix[individu_selectioned].descendant_2;
+              }
 
-		  /*Au niveau de la longueur de branche de l'individu de
-		    recombinaison. Ici on sait que c'est le descendant_2 voir
-		    plus haut la condition. Elle est dependant des descendants
-		    donc elle est égale soit à la longueur de la branche - (somme des individus -
-		    event recombinaison) soit egale a event recombinaison car dernier descendant.
-		    Pour savoir on fait un test des descendants*/
-		  if (matrix[recombinaison_individu].descendant_1 == -1 &&
-		      matrix[recombinaison_individu].descendant_2 == -1)
-		    {
-		      matrix[recombinaison_individu].longueur_branche = 
-			event_recombinaison;
-		    }else{
-		    //sinon il y a forcément des descendants
-		    int x = recombinaison_individu;
-		    float somme_total = matrix[x].longueur_branche;
-		    while (matrix[x].descendant_1 != -1){
-                      x = matrix[x].descendant_1;
-                      somme_total += matrix[x].longueur_branche;
-		    }
-		    matrix[recombinaison_individu].longueur_branche =
-		      matrix[recombinaison_individu].longueur_branche - (somme_total - event_recombinaison);
-		  }
+              // Au niveau des descendants de l'ancêtre de selection
+              if (individu_selectioned == matrix[matrix[individu_selectioned].ancetre].descendant_1)
+              {
+                  // on modifie le descendant 1 de l'ancetre de selection
+                  descendant_1_ancetre_individu_selection = matrix[recombinaison_individu].ancetre;
+                  descendant_2_ancetre_individu_selection =
+                          matrix[matrix[individu_selectioned].ancetre].descendant_2;
+              }
+              else if (individu_selectioned == matrix[matrix[individu_selectioned].ancetre].descendant_2)
+              {
+                  //descendant_1_ancetre_individu_selection = matrix[matrix[individu_selectioned].ancetre].descendant_1;
+                  descendant_1_ancetre_individu_selection = matrix[recombinaison_individu].ancetre;
+                  // on modifie le descendant 2 le l'ancetre de selection
+                  //descendant_2_ancetre_individu_selection = matrix[recombinaison_individu].ancetre;
+                  descendant_2_ancetre_individu_selection = matrix[matrix[recombinaison_individu].ancetre].descendant_1;
+              }
 
-		  /*Au niveau de la longueur de branche de l'individu de
-		    selection c'est pratiquement le même algorithme que
-		    celui au-dessus. Cette longueur est dépendant de ces 
-		    descedant si il en a. Donc elle est soit egale à 
-		    longueur de l'individu selectionnée - (somme individu - event recombinaison)
-		    soit égale a l'évènement de recombinaison lorsque qu'il
-		    le dernier descendant. */
-		  if (matrix[individu_selectioned].descendant_1 == -1 &&
-		      matrix[individu_selectioned].descendant_2 == -1)
-		    {
-		      matrix[individu_selectioned].longueur_branche = 
-			event_recombinaison;
-		    }else{
-		    //sinon il y a forcément des descendants
-		    int x = individu_selectioned;
-		    float somme_total = matrix[x].longueur_branche;
-		    while (matrix[x].descendant_1 != -1){
-                      x = matrix[x].descendant_1;
-                      somme_total += matrix[x].longueur_branche;
-		    }
-		    matrix[individu_selectioned].longueur_branche =
-		      matrix[individu_selectioned].longueur_branche - (somme_total - event_recombinaison);
-		  }
+              // Au niveau de l'ancêtre de l'ancêtre de l'individu de recombinaison
+              ancetre_ancetre_individu_recombinaison = matrix[individu_selectioned].ancetre;
 
-		  ancetre_machin = matrix[matrix[individu_selectioned].ancetre].ancetre;
-		  anc_ind_recomb_anc = matrix[individu_selectioned].ancetre;
-		  matrix[matrix[matrix[recombinaison_individu].ancetre].ancetre].descendant_2 = matrix[matrix[recombinaison_individu].ancetre].descendant_1;
-		}
-              //else
-              else if (matrix[recombinaison_individu].ancetre == matrix[matrix[matrix[recombinaison_individu].ancetre].ancetre].descendant_1)
-		{
-		  printf("Z\n");
-		  //my_pause();
-		  //changement de longueur de branche
+              // Pour les descendants de l'ancetre de recombinaison
+              matrix[matrix[recombinaison_individu].ancetre].descendant_1 = descendant_1_ancetre_recombinaison;
+              matrix[matrix[recombinaison_individu].ancetre].descendant_2 = descendant_2_ancetre_recombinaison;
 
-		  /*Au niveau du descendant 1 :
-		    on change la lg de brche de l'ancetre du descendant 1
-		    par rapport a l'individu de recombinaison qui est en descendant 2
-		    en rajoutant la longueur de branche de l'ancetre de l'individu de 
-		    recombinaison*/
-		  matrix[matrix[matrix[recombinaison_individu].ancetre].descendant_1].longueur_branche +=
-		    matrix[matrix[recombinaison_individu].ancetre].longueur_branche;
+              // Pour les descendants de l'individu de selection
+              matrix[individu_selectioned].descendant_1 = descendant_1_individu_selection;
+              matrix[individu_selectioned].descendant_2 = descendant_2_individu_selection;
 
-		  /*Au niveau de la longueur de branche de l'ancêtre de l'individu
-		    de recombinaison qui est égale la longueur total de l'individu 
-		    selectionné c'est à dire que si l'individu sectionné a des 
-		    descendant faire la somme des longueurs des individus et soustraire
-		    l'evenement de recombinaison sinon la longueur est égale a la longueur 
-		    de l'individu selectionné moins l'évènement de recombinaison.
-		  */
-		  if (matrix[individu_selectioned].descendant_1 == -1 &&
-		      matrix[individu_selectioned].descendant_2 == -1)
-		    {
-		      matrix[matrix[recombinaison_individu].ancetre].longueur_branche =
-			matrix[individu_selectioned].longueur_branche - event_recombinaison;
-		    }else{
-		    //sinon il y a forcément des descendants
-		    int x = individu_selectioned;
-		    float somme_total = matrix[x].longueur_branche;
-		    while (matrix[x].descendant_1 != -1){
-                      x = matrix[x].descendant_1;
-                      somme_total += matrix[x].longueur_branche;
-		    }
-		    matrix[matrix[recombinaison_individu].ancetre].longueur_branche =
-		      somme_total - event_recombinaison;
-		  }
+              // Pour les descendants de l'ancetre de l'individu de selection
+              matrix[matrix[individu_selectioned].ancetre].descendant_1 = descendant_1_ancetre_individu_selection;
+              matrix[matrix[individu_selectioned].ancetre].descendant_2 = descendant_2_ancetre_individu_selection;
 
-		  /*Au niveau de la longueur de branche de l'individu de
-		    recombinaison. Ici on sait que c'est le descendant_1 voir
-		    plus haut la condition. Elle est dependant des descendants
-		    donc elle est égale soit à la longueur de la branche - (somme des individus -
-		    event recombinaison) soit egale a event recombinaison car dernier descendant.
-		    Pour savoir on fait un test des descendants*/
-		  if (matrix[recombinaison_individu].descendant_1 == -1 &&
-		      matrix[recombinaison_individu].descendant_2 == -1)
-		    {
-		      matrix[recombinaison_individu].longueur_branche = 
-			event_recombinaison;
-		    }else{
-		    //sinon il y a forcément des descendants
-		    int x = recombinaison_individu;
-		    float somme_total = matrix[x].longueur_branche;
-		    while (matrix[x].descendant_1 != -1){
-                      x = matrix[x].descendant_1;
-                      somme_total += matrix[x].longueur_branche;
-		    }
-		    matrix[recombinaison_individu].longueur_branche =
-		      matrix[recombinaison_individu].longueur_branche - (somme_total - event_recombinaison);
-		  }
+              // Pour l'ancetre de l'ancetre de l'individu de recombinaison
+              matrix[matrix[recombinaison_individu].ancetre].ancetre = ancetre_ancetre_individu_recombinaison;
 
-		  /*Au niveau de la longueur de branche de l'individu de
-		    selection c'est pratiquement le même algorithme que
-		    celui au-dessus. Cette longueur est dépendant de ces 
-		    descedant si il en a. Donc elle est soit egale à 
-		    longueur de l'individu selectionnée - (somme individu - event recombinaison)
-		    soit égale a l'évènement de recombinaison lorsque qu'il
-		    le dernier descendant. */
-		  if (matrix[individu_selectioned].descendant_1 == -1 &&
-		      matrix[individu_selectioned].descendant_2 == -1)
-		    {
-		      matrix[individu_selectioned].longueur_branche = 
-			event_recombinaison;
-		    }else{
-		    //sinon il y a forcément des descendants
-		    int x = individu_selectioned;
-		    float somme_total = matrix[x].longueur_branche;
-		    while (matrix[x].descendant_1 != -1){
-                      x = matrix[x].descendant_1;
-                      somme_total += matrix[x].longueur_branche;
-		    }
-		    matrix[individu_selectioned].longueur_branche =
-		      matrix[individu_selectioned].longueur_branche - (somme_total - event_recombinaison);
-		  }
-
-		  ancetre_machin = matrix[matrix[individu_selectioned].ancetre].ancetre;
-		  anc_ind_recomb_anc = matrix[individu_selectioned].ancetre;
-		  matrix[matrix[matrix[recombinaison_individu].ancetre].ancetre].descendant_1 = matrix[matrix[recombinaison_individu].ancetre].descendant_1;
-		}
-            }
-	  //du point de vue de l'individu selectionné
-	  if (individu_selectioned == matrix[matrix[individu_selectioned].ancetre].descendant_1)
-            {
-              anc_anc_recombinaison_desc_1 = matrix[recombinaison_individu].ancetre;
-              anc_anc_recombinaison_desc_2 = matrix[matrix[individu_selectioned].ancetre].descendant_2;
-            }
-	  if (individu_selectioned == matrix[matrix[individu_selectioned].ancetre].descendant_2)
-            {
-              anc_anc_recombinaison_desc_1 = matrix[matrix[individu_selectioned].ancetre].descendant_1;
-              anc_anc_recombinaison_desc_2 = matrix[recombinaison_individu].ancetre;
-            }
-
-	  //dans tout les cas 
-	  if (ancetre_individu_selectionne != -1 )
-            {
-              ancetre_individu_selectionne = matrix[recombinaison_individu].ancetre;
-            }
-
-	  matrix[matrix[recombinaison_individu].ancetre].descendant_1 = anc_ind_recomb_desc_1;
-	  matrix[matrix[recombinaison_individu].ancetre].descendant_2 = anc_ind_recomb_desc_2;
-	  matrix[matrix[recombinaison_individu].ancetre].ancetre = anc_ind_recomb_anc;
-
-	  //printf("probleme fin A\n");
-	  matrix[matrix[individu_selectioned].ancetre].descendant_1 = anc_anc_recombinaison_desc_1;
-	  matrix[matrix[individu_selectioned].ancetre].descendant_2 = anc_anc_recombinaison_desc_2;
-	  matrix[matrix[individu_selectioned].ancetre].ancetre = ancetre_machin;
-	  //printf("last_individu_second_tableau = %d\n",last_individu_second_tableau);
-	  //printf("ancetre_individu_selectionne = %d\n",ancetre_individu_selectionne);
-	  //printf("ancetre_machin = %d\n",ancetre_machin);
-	  if (ancetre_individu_selectionne == -1 )
-            {
-              //printf("COUCOU B \n");
-              matrix[last_individu_second_tableau].ancetre = -1;
-            }else{
-	    //printf("COUCOU C\n");
-	    matrix[individu_selectioned].ancetre = ancetre_individu_selectionne;
-	  }
-  
-	  //printf("probleme fin B\n");     
-	  printf("--------------------------------------------------------------\n");
-	  return *matrix;
+              return *matrix;
+          }
+          return *matrix;
         }
-    }else{
+    }
+    else
+    {
       printf("On ne change rien car la coalescence se situe sur la meme branche.\n");
       (*compteur_cache)++;
       return *matrix;
-  }
+    }
   return *matrix;
 }
