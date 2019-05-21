@@ -201,7 +201,7 @@ static void my_pause(void)
   getchar();
 }
 
-Matrice_arbre coalescent_event(Matrice_arbre *matrix, int individu_selectioned, int recombinaison_individu, float event_coalescent, float event_recombinaison, int last_individu, int *compteur_cache, int *compteur_silencieux, int *compteur_non_silencieux)
+Matrice_arbre coalescent_event(Matrice_arbre *matrix, int individu_selectioned, int recombinaison_individu, float event_recombinaison, int last_individu, int *compteur_cache, int *compteur_silencieux, int *compteur_non_silencieux)
 {
   printf("Dans la fonction coalescent_event ==> event_recombinaison : %f\n", event_recombinaison);
 
@@ -257,6 +257,7 @@ Matrice_arbre coalescent_event(Matrice_arbre *matrix, int individu_selectioned, 
 	      matrix[matrix[last_individu].descendant_2].longueur_branche =
 		matrix[last_individu].Temps - matrix[matrix[last_individu].descendant_2].Temps;
 	    }
+        printf("Fin - Cas 1 \n");
 	}
       
       /*
@@ -269,6 +270,7 @@ Matrice_arbre coalescent_event(Matrice_arbre *matrix, int individu_selectioned, 
         {
           //my_pause();
           printf("Cas 2 \n");
+          (*compteur_silencieux)++;
 
           // Changement du Temps de l'ancêtre
           matrix[matrix[recombinaison_individu].ancetre].Temps =
@@ -323,6 +325,7 @@ Matrice_arbre coalescent_event(Matrice_arbre *matrix, int individu_selectioned, 
                       (matrix[matrix[recombinaison_individu].ancetre].Temps -
                       matrix[recombinaison_individu].Temps);
           }
+            printf("Fin - Cas 2 \n");
         }
 
       /*
@@ -375,6 +378,7 @@ Matrice_arbre coalescent_event(Matrice_arbre *matrix, int individu_selectioned, 
                       matrix[individu_selectioned].Temps -
                               matrix[matrix[individu_selectioned].descendant_2].Temps;
           }
+            printf("Fin - Cas 3 \n");
         }
 
       /*
@@ -491,6 +495,7 @@ Matrice_arbre coalescent_event(Matrice_arbre *matrix, int individu_selectioned, 
 
               if (recombinaison_individu == matrix[matrix[recombinaison_individu].ancetre].descendant_2)
               {
+                  //my_pause();
                   printf("Cas 4.2\n");
                   // Pour les descendants de l'indvidu de sélection
                   int descendant_1_individu_selection, descendant_2_individu_selection;
@@ -524,6 +529,7 @@ Matrice_arbre coalescent_event(Matrice_arbre *matrix, int individu_selectioned, 
                           printf("individu recombinaison = %d\n", recombinaison_individu);
                           if (ancetre_suivant == individu_selectioned)
                           {
+                              // probleme ici a mon avis il faut généraliser le cas c'est pour çà que sa bug
                               if (ancetre_precedant == matrix[individu_selectioned].descendant_1)
                               {
                                   descendant_1_individu_selection =
@@ -541,22 +547,29 @@ Matrice_arbre coalescent_event(Matrice_arbre *matrix, int individu_selectioned, 
                           else
                           {
                               ancetre_precedant = ancetre_suivant;
-                              printf("ancetre precedant : %d",ancetre_precedant);
+                              printf("ancetre precedant : %d\n",ancetre_precedant);
                               ancetre_suivant = matrix[ancetre_suivant].ancetre;
-                              printf("ancetre suivant : %d",ancetre_suivant);
+                              printf("ancetre suivant : %d\n",ancetre_suivant);
                           }
                       }
                   }
-                  // Peut être envisager un retour de matrix
+
                   if (recombinaison_individu == matrix[matrix[recombinaison_individu].ancetre].descendant_1)
                   {
                       descendant_1_ancetre_recombinaison = matrix[matrix[recombinaison_individu].ancetre].descendant_1;
                       descendant_2_ancetre_recombinaison = individu_selectioned;
+
+                      // changement de l'ancetre du matrix[matrix[recombinaison_individu].ancetre].descendant_2
+                      matrix[matrix[matrix[recombinaison_individu].ancetre].descendant_2].ancetre =
+                              individu_selectioned;
                   }
                   else if (recombinaison_individu == matrix[matrix[recombinaison_individu].ancetre].descendant_2)
                   {
                       descendant_1_ancetre_recombinaison = individu_selectioned;
                       descendant_2_ancetre_recombinaison = matrix[matrix[recombinaison_individu].ancetre].descendant_2;
+                      // changement de l'ancetre du matrix[matrix[recombinaison_individu].ancetre].descendant_1
+                      matrix[matrix[matrix[recombinaison_individu].ancetre].descendant_1].ancetre =
+                              individu_selectioned;
                   }
 
                   // Pour l'ancetre de l'individu de recombinaison a pour ancêtre -1
@@ -575,6 +588,7 @@ Matrice_arbre coalescent_event(Matrice_arbre *matrix, int individu_selectioned, 
                   // Pour les descendants de l'ancetre de recombinaison
                   matrix[matrix[recombinaison_individu].ancetre].descendant_1 = descendant_1_ancetre_recombinaison;
                   matrix[matrix[recombinaison_individu].ancetre].descendant_2 = descendant_2_ancetre_recombinaison;
+
               }
               return *matrix;
           }
@@ -666,6 +680,14 @@ Matrice_arbre coalescent_event(Matrice_arbre *matrix, int individu_selectioned, 
               // Pour les descendants le l'individu de selection (qui peuvent changer dans de rare cas).
               int descendant_1_individu_selection, descendant_2_individu_selection;
 
+              // Pour les descendants de l'ancetre de l'ancetre de l'individu de recombinaison
+              int descendant_1_ancetre_ancetre_individu_recombinaison = -1;
+              int descendant_2_ancetre_ancetre_individu_recombinaison = -1;
+
+              //et les individus de l'ancetre de l'ancetre de l'indiviudu de
+              // recombinaison est enregistrer pour moins de confusion.
+              int ancetre_selection = matrix[matrix[recombinaison_individu].ancetre].ancetre;
+
               // Au niveau des descendants de l'ancêtre de recombinaison
               if (recombinaison_individu == matrix[matrix[recombinaison_individu].ancetre].descendant_1)
               {
@@ -739,9 +761,9 @@ Matrice_arbre coalescent_event(Matrice_arbre *matrix, int individu_selectioned, 
                       else
                       {
                           ancetre_precedant = ancetre_suivant;
-                          printf("ancetre precedant : %d",ancetre_precedant);
+                          printf("ancetre precedant : %d\n",ancetre_precedant);
                           ancetre_suivant = matrix[ancetre_suivant].ancetre;
-                          printf("ancetre suivant : %d",ancetre_suivant);
+                          printf("ancetre suivant : %d\n",ancetre_suivant);
                           descendant_1_individu_selection = matrix[individu_selectioned].descendant_1;
                           descendant_2_individu_selection = matrix[individu_selectioned].descendant_2;
                       }
@@ -754,25 +776,175 @@ Matrice_arbre coalescent_event(Matrice_arbre *matrix, int individu_selectioned, 
                   descendant_2_individu_selection = matrix[individu_selectioned].descendant_2;
               }
 
-              // Au niveau des descendants de l'ancêtre de selection
-              if (individu_selectioned == matrix[matrix[individu_selectioned].ancetre].descendant_1)
+              //(Algorithme en dessous il y en fait 2 cas + documenter mieux )
+
+              // Si il y a un lien de parenté proche
+              if (matrix[matrix[individu_selectioned].ancetre].descendant_1 ==
+                  matrix[recombinaison_individu].ancetre ||
+                      matrix[matrix[individu_selectioned].ancetre].descendant_2 ==
+                      matrix[recombinaison_individu].ancetre)
               {
-                  // on modifie le descendant 1 de l'ancetre de selection
-                  descendant_1_ancetre_individu_selection = matrix[recombinaison_individu].ancetre;
-                  descendant_2_ancetre_individu_selection =
-                          matrix[matrix[individu_selectioned].ancetre].descendant_2;
+                  printf("Cas 6.3\n");
+                  //my_pause();
+                  /* Dans ce context on ne modifie pas les variables de
+                   * l'ancêtre de l'ancêtre de recombinaison car elles
+                   * correspondent aux variables de l'ancetre de l'indiviud de selection
+                   * et ces descendants.
+                   */
+                  if (individu_selectioned == matrix[matrix[individu_selectioned].ancetre].descendant_1)
+                  {
+                      // on modifie le descendant 1 de l'ancetre de selection
+                      descendant_1_ancetre_individu_selection = matrix[recombinaison_individu].ancetre;
+                      // on ne modifie pas le descendant 2 des l'ancetre de l'individu de selection
+                      if (recombinaison_individu == matrix[matrix[recombinaison_individu].ancetre].descendant_1)
+                      {
+                          descendant_2_ancetre_individu_selection =
+                                  matrix[matrix[recombinaison_individu].ancetre].descendant_2;
+
+                      }
+                      else if (recombinaison_individu == matrix[matrix[recombinaison_individu].ancetre].descendant_2)
+                      {
+                          descendant_2_ancetre_individu_selection =
+                                  matrix[matrix[recombinaison_individu].ancetre].descendant_1;
+                      }
+                  }
+                  else if (individu_selectioned == matrix[matrix[individu_selectioned].ancetre].descendant_2)
+                  {
+                      //descendant_2_ancetre_individu_selection =
+                      //  matrix[recombinaison_individu].ancetre;
+                      descendant_2_ancetre_individu_selection =
+                              matrix[recombinaison_individu].ancetre;
+                      // on modifie le descendant 2 le l'ancetre de selection
+                      //descendant_2_ancetre_individu_selection = matrix[recombinaison_individu].ancetre;
+                      if (recombinaison_individu == matrix[matrix[recombinaison_individu].ancetre].descendant_1)
+                      {
+                          descendant_1_ancetre_individu_selection =
+                                  matrix[matrix[recombinaison_individu].ancetre].descendant_2;
+                      }
+                      else if (recombinaison_individu == matrix[matrix[recombinaison_individu].ancetre].descendant_2)
+                      {
+                          descendant_1_ancetre_individu_selection =
+                                  matrix[matrix[recombinaison_individu].ancetre].descendant_1;
+                      }
+                  }
               }
-              else if (individu_selectioned == matrix[matrix[individu_selectioned].ancetre].descendant_2)
+              else
               {
-                  //descendant_1_ancetre_individu_selection = matrix[matrix[individu_selectioned].ancetre].descendant_1;
-                  descendant_1_ancetre_individu_selection = matrix[recombinaison_individu].ancetre;
-                  // on modifie le descendant 2 le l'ancetre de selection
-                  //descendant_2_ancetre_individu_selection = matrix[recombinaison_individu].ancetre;
-                  descendant_2_ancetre_individu_selection = matrix[matrix[recombinaison_individu].ancetre].descendant_1;
+                  printf("Cas 6.4\n");
+                  //my_pause();
+                  // Au niveau des descendants de l'ancêtre de selection + branche > 1
+                  if (individu_selectioned == matrix[matrix[individu_selectioned].ancetre].descendant_1)
+                  {
+                      // on modifie le descendant 1 de l'ancetre de selection
+                      descendant_1_ancetre_individu_selection = matrix[recombinaison_individu].ancetre;
+                      // on ne modifie pas le descendant 2 des l'ancetre de l'individu de selection
+                      descendant_2_ancetre_individu_selection =
+                              matrix[matrix[individu_selectioned].ancetre].descendant_2;
+                      if (recombinaison_individu == matrix[matrix[recombinaison_individu].ancetre].descendant_1)
+                      {
+
+                          // refaire un test pour savoir qui ne change pas (fait)
+                          if (matrix[recombinaison_individu].ancetre ==
+                              matrix[matrix[matrix[recombinaison_individu].ancetre].ancetre].descendant_1)
+                          {
+                              descendant_1_ancetre_ancetre_individu_recombinaison =
+                                      matrix[matrix[recombinaison_individu].ancetre].descendant_2;
+                              descendant_2_ancetre_ancetre_individu_recombinaison =
+                                      matrix[matrix[matrix[recombinaison_individu].ancetre].ancetre].descendant_2;
+                          }
+                          if (matrix[recombinaison_individu].ancetre ==
+                              matrix[matrix[matrix[recombinaison_individu].ancetre].ancetre].descendant_2)
+                          {
+                              descendant_1_ancetre_ancetre_individu_recombinaison =
+                                      matrix[matrix[matrix[recombinaison_individu].ancetre].ancetre].descendant_1;
+                              descendant_2_ancetre_ancetre_individu_recombinaison =
+                                      matrix[matrix[recombinaison_individu].ancetre].descendant_2;
+                          }
+                      }
+                      else if (recombinaison_individu == matrix[matrix[recombinaison_individu].ancetre].descendant_2)
+                      {
+
+                          // refaire un test pour savoir qui ne change pas (fait)
+                          if (matrix[recombinaison_individu].ancetre ==
+                          matrix[matrix[matrix[recombinaison_individu].ancetre].ancetre].descendant_1)
+                          {
+                              descendant_1_ancetre_ancetre_individu_recombinaison =
+                                      matrix[matrix[recombinaison_individu].ancetre].descendant_1;
+                              descendant_2_ancetre_ancetre_individu_recombinaison =
+                                      matrix[matrix[matrix[recombinaison_individu].ancetre].ancetre].descendant_2;
+                          }
+                          if (matrix[recombinaison_individu].ancetre ==
+                              matrix[matrix[matrix[recombinaison_individu].ancetre].ancetre].descendant_2)
+                          {
+                              descendant_1_ancetre_ancetre_individu_recombinaison =
+                                      matrix[matrix[matrix[recombinaison_individu].ancetre].ancetre].descendant_1;
+                              descendant_2_ancetre_ancetre_individu_recombinaison =
+                                      matrix[matrix[recombinaison_individu].ancetre].descendant_1;
+                          }
+                      }
+                  }
+                  else if (individu_selectioned == matrix[matrix[individu_selectioned].ancetre].descendant_2)
+                  {
+                      //descendant_1_ancetre_individu_selection =
+                      // matrix[matrix[individu_selectioned].ancetre].descendant_1;
+                      descendant_1_ancetre_individu_selection =
+                              matrix[matrix[individu_selectioned].ancetre].descendant_1;
+                      // on modifie le descendant 2 le l'ancetre de selection
+                      //descendant_2_ancetre_individu_selection = matrix[recombinaison_individu].ancetre;
+                      descendant_2_ancetre_individu_selection = matrix[recombinaison_individu].ancetre;
+
+                      if (recombinaison_individu == matrix[matrix[recombinaison_individu].ancetre].descendant_1)
+                      {
+                          // faire un test pour savoir qui ne change pas
+                          if (matrix[recombinaison_individu].ancetre ==
+                              matrix[matrix[matrix[recombinaison_individu].ancetre].ancetre].descendant_1)
+                          {
+                              descendant_1_ancetre_ancetre_individu_recombinaison =
+                                      matrix[matrix[recombinaison_individu].ancetre].descendant_1;
+                              descendant_2_ancetre_ancetre_individu_recombinaison =
+                                      matrix[matrix[matrix[recombinaison_individu].ancetre].ancetre].descendant_2;
+                          }
+                          if (matrix[recombinaison_individu].ancetre ==
+                              matrix[matrix[matrix[recombinaison_individu].ancetre].ancetre].descendant_2)
+                          {
+                              descendant_1_ancetre_ancetre_individu_recombinaison =
+                                      matrix[matrix[matrix[recombinaison_individu].ancetre].ancetre].descendant_1;
+                              descendant_2_ancetre_ancetre_individu_recombinaison =
+                                      matrix[matrix[recombinaison_individu].ancetre].descendant_1;
+                          }
+                      }
+                      else if (recombinaison_individu == matrix[matrix[recombinaison_individu].ancetre].descendant_2)
+                      {
+                          // refaire un test pour savoir qui ne change pas (fait)
+                          if (matrix[recombinaison_individu].ancetre ==
+                              matrix[matrix[matrix[recombinaison_individu].ancetre].ancetre].descendant_1)
+                          {
+                              descendant_1_ancetre_ancetre_individu_recombinaison =
+                                      matrix[matrix[recombinaison_individu].ancetre].descendant_1;
+                              descendant_2_ancetre_ancetre_individu_recombinaison =
+                                      matrix[matrix[matrix[recombinaison_individu].ancetre].ancetre].descendant_2;
+                          }
+                          if (matrix[recombinaison_individu].ancetre ==
+                              matrix[matrix[matrix[recombinaison_individu].ancetre].ancetre].descendant_2)
+                          {
+                              descendant_1_ancetre_ancetre_individu_recombinaison =
+                                      matrix[matrix[matrix[recombinaison_individu].ancetre].ancetre].descendant_1;
+                              descendant_2_ancetre_ancetre_individu_recombinaison =
+                                      matrix[matrix[recombinaison_individu].ancetre].descendant_1;
+                          }
+                      }
+                  }
               }
 
+              printf("individu de selection = %d\n",individu_selectioned);
+              printf("individu de recombinaison = %d\n", recombinaison_individu);
+              printf("recomb.anc.anc = %d\n",matrix[matrix[recombinaison_individu].ancetre].ancetre);
+
               // Au niveau de l'ancêtre de l'ancêtre de l'individu de recombinaison
-              ancetre_ancetre_individu_recombinaison = matrix[individu_selectioned].ancetre;
+              if (matrix[matrix[matrix[recombinaison_individu].ancetre].ancetre].ancetre == -1)
+                  ancetre_ancetre_individu_recombinaison = -1;
+              else
+                ancetre_ancetre_individu_recombinaison = matrix[individu_selectioned].ancetre;
 
               // Pour les descendants de l'ancetre de recombinaison
               matrix[matrix[recombinaison_individu].ancetre].descendant_1 = descendant_1_ancetre_recombinaison;
@@ -788,6 +960,20 @@ Matrice_arbre coalescent_event(Matrice_arbre *matrix, int individu_selectioned, 
 
               // Pour l'ancetre de l'ancetre de l'individu de recombinaison
               matrix[matrix[recombinaison_individu].ancetre].ancetre = ancetre_ancetre_individu_recombinaison;
+
+              // Pour l'ancetre de l'individu de selection (toujours).
+              matrix[ancetre_selection].ancetre = matrix[recombinaison_individu].ancetre;
+
+              // Pour l'ancetre de l'ancetre de l'individu de recombinaison est ses descendants
+              if ( descendant_1_ancetre_ancetre_individu_recombinaison != -1 &&
+              descendant_2_ancetre_ancetre_individu_recombinaison != -1)
+              {
+                  printf("ancetre_selection = %d\n",ancetre_selection);
+                  matrix[ancetre_selection].descendant_1 =
+                          descendant_1_ancetre_ancetre_individu_recombinaison;
+                  matrix[ancetre_selection].descendant_2 =
+                          descendant_2_ancetre_ancetre_individu_recombinaison;
+              }
 
               return *matrix;
           }

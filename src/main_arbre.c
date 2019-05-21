@@ -131,7 +131,7 @@ int main(int argc, char *argv[])
     printf("L'individu selectionné au hazard dans le tableau est %d.\n",individu_selectioned);
 
 
-    individus_matrix[nombre_individu_total] = coalescent_event(individus_matrix, individu_selectioned, recombinaison_individu, event_coalescent, real_time_recombinaison, last_individu, &compteur_cache, &compteur_silencieux, &compteur_non_silencieux);
+    individus_matrix[nombre_individu_total] = coalescent_event(individus_matrix, individu_selectioned, recombinaison_individu, real_time_recombinaison, last_individu, &compteur_cache, &compteur_silencieux, &compteur_non_silencieux);
     
     //printf("Deuxième get_all_informations\n");
     get_all_informations(individus_matrix, 0, nombre_individu_total);
@@ -148,13 +148,14 @@ int main(int argc, char *argv[])
     //on teste qui sont les descendants d'un individu donné
     int *tableau_descendant = malloc((nombre_individu)*(sizeof(int)));
     tableau_descendant = calloc(nombre_individu, sizeof(int));
+
     //exemple avec les descendant de l'individu 8
-    get_descendants(individus_matrix, 8, tableau_descendant);
+    //get_descendants(individus_matrix, 8, tableau_descendant);
     //affiche le tableau 
     //diplay_table(tableau_descendant, nombre_individu);
     
     //recupère le nombre de noeud terminal avec la fonction : get_total_terminal_node.
-    int total_terminal_node = get_total_terminal_node(individus_matrix, 8);
+    //int total_terminal_node = get_total_terminal_node(individus_matrix, 8);
     //printf("Pour l'individu %d le nombre total de feuille = %d\n", 8, total_terminal_node);
     
     free(tableau_descendant);
